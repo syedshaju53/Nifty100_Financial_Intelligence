@@ -1,6 +1,19 @@
+# Virtual environment
 venv/
+
+# Python
 __pycache__/
 *.pyc
+
+# Environment
 .env
+
+# Database
 *.db
+
+# macOS
 .DS_Store
+
+# Confidential project assets
+data/raw/
+docs/Nifty100_Project_Document_FINAL.pdf
