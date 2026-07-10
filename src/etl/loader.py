@@ -1,24 +1,12 @@
 from pathlib import Path
 import pandas as pd
 
-
 BASE_DIR = Path(__file__).resolve().parents[2]
-
 
 RAW_DATA = BASE_DIR / "data" / "raw"
 
 
-def load_excel(file_name, header=0):
-    """
-    Load an Excel file from the data/raw directory.
-
-    Parameters:
-        file_name (str): Excel filename.
-        header (int): Header row (0 or 1).
-
-    Returns:
-        pandas.DataFrame
-    """
+def load_excel(file_name, header=1):
 
     file_path = RAW_DATA / file_name
 

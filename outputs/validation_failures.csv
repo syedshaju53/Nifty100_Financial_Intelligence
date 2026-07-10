@@ -1,0 +1,13 @@
+Rule,Issue,Severity
+DQ-03,9 missing values,WARNING
+DQ-07,Duplicate website URLs,INFO
+DQ-09,id is object datatype,INFO
+DQ-09,company_logo is object datatype,INFO
+DQ-09,company_name is object datatype,INFO
+DQ-09,chart_link is object datatype,INFO
+DQ-09,about_company is object datatype,INFO
+DQ-09,website is object datatype,INFO
+DQ-09,nse_profile is object datatype,INFO
+DQ-09,bse_profile is object datatype,INFO
+DQ-14,Foreign key validation will run after SQLite loading,INFO
+DQ-15,Missing company logos,INFO
