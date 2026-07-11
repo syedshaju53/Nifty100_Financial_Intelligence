@@ -1,0 +1,41 @@
+============================================================
+DAY 5 REPORT
+SQLite Data Loading
+============================================================
+
+Objective:
+Load all cleaned Excel datasets into the SQLite database.
+
+Tasks Completed:
+• Developed database loader.
+• Loaded all datasets into SQLite.
+• Generated load_audit.csv.
+• Verified successful insertion.
+• Enabled Foreign Key constraints.
+• Removed duplicate loading issues.
+• Validated loaded records.
+
+Load Summary:
+
+companies .............. 92
+profit_loss ............ 1177
+balance_sheet .......... 1227
+cash_flow .............. 1091
+analysis ............... 16
+pros_and_cons .......... 14
+documents .............. 1457
+stock_prices ........... 5520
+ratios ................. 1160
+market_cap ............. 552
+peer_groups ............ 56
+sectors ................ 92
+
+Deliverables:
+✓ db_loader.py
+✓ load_audit.csv
+✓ Fully Populated Database
+
+Status:
+COMPLETED
+
+============================================================
