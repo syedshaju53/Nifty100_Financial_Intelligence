@@ -1,9 +1,11 @@
 PRAGMA foreign_keys = ON;
 
--- ==========================================
--- 1. Companies
--- ==========================================
-CREATE TABLE IF NOT EXISTS companies (
+
+
+-- =========================================
+-- Companies
+-- =========================================
+CREATE TABLE companies (
     id TEXT PRIMARY KEY,
     company_logo TEXT,
     company_name TEXT,
@@ -18,137 +20,172 @@ CREATE TABLE IF NOT EXISTS companies (
     roe_percentage REAL
 );
 
--- ==========================================
--- 2. Profit & Loss
--- ==========================================
-CREATE TABLE IF NOT EXISTS profit_loss (
-    id TEXT,
+-- =========================================
+-- Profit & Loss
+-- =========================================
+CREATE TABLE profit_loss (
+    id INTEGER PRIMARY KEY,
+    company_id TEXT,
     year INTEGER,
     sales REAL,
     expenses REAL,
     operating_profit REAL,
+    opm_percentage REAL,
+    other_income REAL,
+    interest REAL,
+    depreciation REAL,
+    profit_before_tax REAL,
+    tax_percentage REAL,
     net_profit REAL,
     eps REAL,
-    PRIMARY KEY(id, year),
-    FOREIGN KEY(id) REFERENCES companies(id)
+    dividend_payout REAL,
+    FOREIGN KEY(company_id) REFERENCES companies(id)
 );
 
--- ==========================================
--- 3. Balance Sheet
--- ==========================================
-CREATE TABLE IF NOT EXISTS balance_sheet (
-    id TEXT,
+-- =========================================
+-- Balance Sheet
+-- =========================================
+CREATE TABLE balance_sheet (
+    id INTEGER PRIMARY KEY,
+    company_id TEXT,
     year INTEGER,
-    total_assets REAL,
-    total_liabilities REAL,
-    equity REAL,
+    equity_capital REAL,
     reserves REAL,
     borrowings REAL,
-    PRIMARY KEY(id, year),
-    FOREIGN KEY(id) REFERENCES companies(id)
+    other_liabilities REAL,
+    total_liabilities REAL,
+    fixed_assets REAL,
+    cwip REAL,
+    investments REAL,
+    other_asset REAL,
+    total_assets REAL,
+    FOREIGN KEY(company_id) REFERENCES companies(id)
 );
 
--- ==========================================
--- 4. Cash Flow
--- ==========================================
-CREATE TABLE IF NOT EXISTS cash_flow (
-    id TEXT,
+-- =========================================
+-- Cash Flow
+-- =========================================
+CREATE TABLE cash_flow (
+    id INTEGER PRIMARY KEY,
+    company_id TEXT,
     year INTEGER,
-    operating_cash REAL,
-    investing_cash REAL,
-    financing_cash REAL,
+    operating_activity REAL,
+    investing_activity REAL,
+    financing_activity REAL,
     net_cash_flow REAL,
-    PRIMARY KEY(id, year),
-    FOREIGN KEY(id) REFERENCES companies(id)
+    FOREIGN KEY(company_id) REFERENCES companies(id)
 );
 
--- ==========================================
--- 5. Financial Ratios
--- ==========================================
-CREATE TABLE IF NOT EXISTS ratios (
-    id TEXT,
+-- =========================================
+-- Financial Ratios
+-- =========================================
+CREATE TABLE ratios (
+    id INTEGER PRIMARY KEY,
+    company_id TEXT,
+    year TEXT,
+    net_profit_margin_pct REAL,
+    operating_profit_margin_pct REAL,
+    return_on_equity_pct REAL,
+    debt_to_equity REAL,
+    interest_coverage REAL,
+    asset_turnover REAL,
+    free_cash_flow_cr REAL,
+    capex_cr REAL,
+    earnings_per_share REAL,
+    book_value_per_share REAL,
+    dividend_payout_ratio_pct REAL,
+    total_debt_cr REAL,
+    cash_from_operations_cr REAL,
+    FOREIGN KEY(company_id) REFERENCES companies(id)
+);
+
+-- =========================================
+-- Analysis
+-- =========================================
+CREATE TABLE analysis (
+    id INTEGER PRIMARY KEY,
+    company_id TEXT,
+    compounded_sales_growth REAL,
+    compounded_profit_growth REAL,
+    stock_price_cagr REAL,
+    roe REAL,
+    FOREIGN KEY(company_id) REFERENCES companies(id)
+);
+
+-- =========================================
+-- Market Cap
+-- =========================================
+CREATE TABLE market_cap (
+    id INTEGER PRIMARY KEY,
+    company_id TEXT,
     year INTEGER,
+    market_cap_crore REAL,
+    enterprise_value_crore REAL,
     pe_ratio REAL,
     pb_ratio REAL,
-    roe REAL,
-    roce REAL,
-    debt_equity REAL,
-    current_ratio REAL,
-    PRIMARY KEY(id, year),
-    FOREIGN KEY(id) REFERENCES companies(id)
+    ev_ebitda REAL,
+    dividend_yield_pct REAL,
+    FOREIGN KEY(company_id) REFERENCES companies(id)
 );
 
--- ==========================================
--- 6. Analysis
--- ==========================================
-CREATE TABLE IF NOT EXISTS analysis (
-    id TEXT PRIMARY KEY,
-    analysis TEXT,
-    FOREIGN KEY(id) REFERENCES companies(id)
+-- =========================================
+-- Peer Groups
+-- =========================================
+CREATE TABLE peer_groups (
+    id INTEGER PRIMARY KEY,
+    peer_group_name TEXT,
+    company_id TEXT,
+    is_benchmark TEXT,
+    FOREIGN KEY(company_id) REFERENCES companies(id)
 );
 
--- ==========================================
--- 7. Market Cap
--- ==========================================
-CREATE TABLE IF NOT EXISTS market_cap (
-    id TEXT PRIMARY KEY,
-    market_cap REAL,
-    FOREIGN KEY(id) REFERENCES companies(id)
+-- =========================================
+-- Pros & Cons
+-- =========================================
+CREATE TABLE pros_and_cons (
+    id INTEGER PRIMARY KEY,
+    company_id TEXT,
+    pros TEXT,
+    cons TEXT,
+    FOREIGN KEY(company_id) REFERENCES companies(id)
 );
 
--- ==========================================
--- 8. Peer Groups
--- ==========================================
-CREATE TABLE IF NOT EXISTS peer_groups (
-    id TEXT,
-    peer_company TEXT,
-    PRIMARY KEY(id, peer_company),
-    FOREIGN KEY(id) REFERENCES companies(id)
+-- =========================================
+-- Sectors
+-- =========================================
+CREATE TABLE sectors (
+    id INTEGER PRIMARY KEY,
+    company_id TEXT,
+    broad_sector TEXT,
+    sub_sector TEXT,
+    index_weight_pct REAL,
+    market_cap_category TEXT,
+    FOREIGN KEY(company_id) REFERENCES companies(id)
 );
 
--- ==========================================
--- 9. Pros and Cons
--- ==========================================
-CREATE TABLE IF NOT EXISTS pros_and_cons (
-    id TEXT,
-    type TEXT,
-    description TEXT,
-    PRIMARY KEY(id, type, description),
-    FOREIGN KEY(id) REFERENCES companies(id)
+-- =========================================
+-- Documents
+-- =========================================
+CREATE TABLE documents (
+    id INTEGER PRIMARY KEY,
+    company_id TEXT,
+    year INTEGER,
+    annual_report TEXT,
+    FOREIGN KEY(company_id) REFERENCES companies(id)
 );
 
--- ==========================================
--- 10. Sectors
--- ==========================================
-CREATE TABLE IF NOT EXISTS sectors (
-    id TEXT PRIMARY KEY,
-    sector TEXT,
-    industry TEXT,
-    FOREIGN KEY(id) REFERENCES companies(id)
-);
-
--- ==========================================
--- 11. Documents
--- ==========================================
-CREATE TABLE IF NOT EXISTS documents (
-    id TEXT,
-    document_name TEXT,
-    document_url TEXT,
-    PRIMARY KEY(id, document_name),
-    FOREIGN KEY(id) REFERENCES companies(id)
-);
-
--- ==========================================
--- 12. Stock Prices
--- ==========================================
-CREATE TABLE IF NOT EXISTS stock_prices (
-    id TEXT,
-    trade_date DATE,
+-- =========================================
+-- Stock Prices
+-- =========================================
+CREATE TABLE stock_prices (
+    id INTEGER PRIMARY KEY,
+    company_id TEXT,
+    date TEXT,
     open_price REAL,
     high_price REAL,
     low_price REAL,
     close_price REAL,
     volume INTEGER,
-    PRIMARY KEY(id, trade_date),
-    FOREIGN KEY(id) REFERENCES companies(id)
+    adjusted_close REAL,
+    FOREIGN KEY(company_id) REFERENCES companies(id)
 );
