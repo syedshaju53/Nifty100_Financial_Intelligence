@@ -1,0 +1,14 @@
+pandas
+numpy
+openpyxl
+matplotlib
+plotly
+streamlit
+fastapi
+uvicorn
+scikit-learn
+pytest
+reportlab
+python-dotenv
+
+
