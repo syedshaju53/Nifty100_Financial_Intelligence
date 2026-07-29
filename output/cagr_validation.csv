@@ -1,0 +1,9 @@
+company_id,metric,parsed,computed,difference,review_required
+HDFCBANK,compounded_sales_growth,22.0,21.95098428169122,0.049015718308780265,False
+HDFCBANK,compounded_profit_growth,23.0,23.865063572879073,0.8650635728790732,False
+INFY,compounded_sales_growth,13.0,13.199100930556229,0.19910093055622902,False
+INFY,compounded_profit_growth,11.0,11.239419983657939,0.23941998365793893,False
+SBILIFE,compounded_sales_growth,24.0,24.231614182367544,0.23161418236754372,False
+SBILIFE,compounded_profit_growth,6.0,7.374662152227485,1.3746621522274847,False
+TCS,compounded_sales_growth,10.0,10.463614801716602,0.4636148017166022,False
+TCS,compounded_profit_growth,8.0,7.871172131953608,0.12882786804639235,False

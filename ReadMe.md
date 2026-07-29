@@ -1,21 +1,54 @@
-# 📊 Nifty100 Financial Intelligence
+# 📈 Nifty100 Financial Intelligence Platform
 
-## Overview
-
-Nifty100 Financial Intelligence is an ETL (Extract, Transform, Load) and Financial Data Management project developed using Python and SQLite. The project processes financial datasets of Nifty 100 companies, performs data validation, and stores the cleaned data in a relational database for further analysis and visualization.
-
-The project follows a structured ETL pipeline with automated validation, database loading, and data quality checks to ensure accurate and reliable financial data.
+An end-to-end Financial Intelligence Platform built using Python, SQL, SQLite, Machine Learning, Financial Analytics, NLP, and Interactive Dashboards for the Nifty 100 companies.
 
 ---
 
-## Project Objectives
+# Project Overview
 
-- Build a robust ETL pipeline for financial datasets.
-- Validate and clean raw Excel files.
-- Store cleaned data in a normalized SQLite database.
-- Maintain data integrity using Primary Keys and Foreign Keys.
-- Generate audit reports for data loading and validation.
-- Prepare a reliable data source for financial analysis and dashboards.
+The objective of this project is to build a complete financial analytics platform capable of
+
+- Collecting financial statements
+- Cleaning and validating data
+- Building an analytical database
+- Calculating financial KPIs
+- Performing peer comparison
+- Sector-wise analytics
+- Company quality scoring
+- Cash Flow Intelligence
+- NLP-based financial text parsing
+- Automated Pros & Cons generation
+- Capital Allocation Analysis
+- PDF Tearsheet generation
+- Interactive Dashboard
+
+The project processes financial data of approximately 90 Nifty 100 companies and generates professional analytical reports.
+
+---
+
+# Technology Stack
+
+### Programming
+
+- Python 3.13
+
+### Database
+
+- SQLite
+
+### Libraries
+
+- Pandas
+- NumPy
+- Matplotlib
+- Plotly
+- OpenPyXL
+- ReportLab
+- Streamlit
+
+### IDE
+
+- VS Code
 
 ---
 
@@ -23,7 +56,9 @@ The project follows a structured ETL pipeline with automated validation, databas
 
 ```
 Nifty100_Financial_Intelligence/
+
 │
+├── config/
 ├── data/
 │   ├── raw/
 │   └── processed/
@@ -32,235 +67,275 @@ Nifty100_Financial_Intelligence/
 │   ├── schema.sql
 │   └── nifty100.db
 │
-├── outputs/
-│   ├── load_audit.csv
-│   └── validation_failures.csv
-│
-├── reports/
+├── notebooks/
 │
 ├── src/
-│   └── etl/
-│       ├── loader.py
-│       ├── cleaner.py
-│       ├── validator.py
-│       └── db_loader.py
+│   ├── analytics/
+│   ├── dashboard/
+│   ├── etl/
+│   ├── nlp/
+│   ├── reports/
+│   └── screener/
+│
+├── reports/
+│   ├── sector/
+│   ├── tearsheets/
+│   └── portfolio/
+│
+├── output/
 │
 ├── tests/
-│   └── etl/
-│       ├── test_loader.py
-│       ├── test_validator.py
-│       ├── test_db_loader.py
-│       ├── test_data_quality.py
-│       └── final_validation.py
 │
-├── requirements.txt
-└── README.md
+├── README.md
+└── requirements.txt
 ```
 
 ---
 
-# Technologies Used
+# Project Modules
 
-- Python 3
-- Pandas
-- NumPy
-- SQLite
-- OpenPyXL
-- Git
-- GitHub
+## Sprint 1
+
+✔ Environment Setup
+
+✔ ETL Pipeline
+
+✔ Data Cleaning
+
+✔ Data Validation
+
+✔ SQLite Database
+
+✔ Data Loading
+
+---
+
+## Sprint 2
+
+✔ Financial Ratio Engine
+
+✔ Profitability Analysis
+
+✔ Liquidity Analysis
+
+✔ Leverage Analysis
+
+✔ Efficiency Analysis
+
+✔ Health Score
+
+✔ Peer Comparison
+
+---
+
+## Sprint 3
+
+✔ Ranking Engine
+
+✔ Stock Screener
+
+✔ Radar Charts
+
+✔ Company Valuation
+
+✔ Dashboard Development
+
+---
+
+## Sprint 4
+
+✔ NLP Financial Parser
+
+✔ CAGR Validation
+
+✔ Financial Master Dataset
+
+✔ Automated Pros & Cons Generator
+
+---
+
+## Sprint 5
+
+✔ Cash Flow Intelligence
+
+✔ Capital Allocation Analysis
+
+✔ Distress Detection
+
+✔ Sector Reports
+
+✔ Company Tearsheet Generator
+
+✔ Portfolio Summary Report
 
 ---
 
 # Database Tables
 
-The SQLite database contains the following tables:
-
-1. companies
-2. profit_loss
-3. balance_sheet
-4. cash_flow
-5. analysis
-6. pros_and_cons
-7. documents
-8. stock_prices
-9. ratios
-10. market_cap
-11. peer_groups
-12. sectors
+- Companies
+- Profit & Loss
+- Balance Sheet
+- Cash Flow
+- Ratios
+- Stock Prices
+- Market Cap
+- Analysis
+- Documents
+- Peer Groups
+- Pros & Cons
+- Sectors
 
 ---
 
-# ETL Workflow
+# Features
 
-### Step 1: Extract
-
-- Read Excel files
-- Validate file availability
-- Load datasets using Pandas
-
-### Step 2: Transform
-
-- Remove duplicates
-- Handle missing values
-- Normalize column names
-- Validate data quality
-- Verify required columns
-
-### Step 3: Load
-
-- Create SQLite database
-- Create database schema
-- Load validated data
-- Generate load audit report
+- Automated ETL Pipeline
+- Financial KPI Engine
+- Company Ranking
+- Financial Health Score
+- Peer Comparison
+- Interactive Dashboard
+- NLP Financial Parsing
+- Automated Investment Insights
+- Cash Flow Intelligence
+- Capital Allocation Analysis
+- Sector-wise Analytics
+- PDF Report Generation
 
 ---
 
-# Data Quality Validation
+# Outputs Generated
 
-The project performs multiple validation checks including:
+## CSV
 
-- Missing Value Validation
-- Duplicate Record Detection
-- Required Column Validation
-- Data Type Validation
-- Foreign Key Validation
-- NULL Value Check
-- Company ID Validation
-
----
-
-# Database Summary
-
-| Table | Rows |
-|--------|------|
-| Companies | 92 |
-| Profit Loss | 1177 |
-| Balance Sheet | 1227 |
-| Cash Flow | 1091 |
-| Analysis | 16 |
-| Pros & Cons | 14 |
-| Documents | 1457 |
-| Stock Prices | 5520 |
-| Ratios | 1160 |
-| Market Cap | 552 |
-| Peer Groups | 56 |
-| Sectors | 92 |
+- analysis_parsed.csv
+- cagr_validation.csv
+- capital_allocation.csv
+- distress_alerts.csv
+- pros_cons_generated.csv
+- parse_failures.csv
+- peer_percentiles.csv
+- master_financials.csv
 
 ---
 
-# Validation Results
+## Excel
 
-- Duplicate Company IDs : PASS
-- NULL Company IDs : PASS
-- Foreign Key Validation : PASS
-- Data Loading : PASS
-- Record Count Verification : PASS
-
----
-
-# Sprint 1 Progress
-
-| Day | Status |
-|------|--------|
-| Day 1 | Completed |
-| Day 2 | Completed |
-| Day 3 | Completed |
-| Day 4 | Completed |
-| Day 5 | Completed |
-| Day 6 | Completed |
-| Day 7 | Completed |
+- screener_output.xlsx
+- quality_scores.xlsx
+- peer_comparison.xlsx
+- cashflow_intelligence.xlsx
 
 ---
 
-# How to Run the Project
+## PDF
 
-## Clone Repository
+### Company Reports
+
+- 90 Company Tearsheets
+
+### Sector Reports
+
+- Communication Services
+- Consumer Discretionary
+- Consumer Staples
+- Energy
+- Financials
+- Healthcare
+- Industrials
+- Information Technology
+- Materials
+- Real Estate
+
+### Portfolio
+
+- portfolio_summary.pdf
+
+---
+
+# Dashboard
+
+The Streamlit dashboard includes
+
+- Company Search
+- Financial KPIs
+- Radar Charts
+- Peer Comparison
+- Sector Analysis
+- Cash Flow Intelligence
+- Company Rankings
+- Investment Insights
+
+Run the dashboard
 
 ```bash
-git clone https://github.com/syedshaju53/Nifty100_Financial_Intelligence.git
+streamlit run src/dashboard/app.py
 ```
 
-## Create Virtual Environment
+---
+
+# Installation
+
+Clone the repository
 
 ```bash
-python -m venv venv
+git clone https://github.com/yourusername/Nifty100_Financial_Intelligence.git
 ```
 
-## Activate Environment
-
-### Windows
-
-```bash
-venv\Scripts\activate
-```
-
-### macOS/Linux
-
-```bash
-source venv/bin/activate
-```
-
-## Install Dependencies
+Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Run Database Loader
+Run ETL
 
 ```bash
-python src/etl/db_loader.py
+python src/etl/loader.py
 ```
 
-## Run Data Quality Validation
+Run Dashboard
 
 ```bash
-python tests/etl/test_data_quality.py
-```
-
-## Run Final Validation
-
-```bash
-python tests/etl/final_validation.py
+streamlit run src/dashboard/app.py
 ```
 
 ---
 
-# Project Deliverables
+# Key Achievements
 
-- ETL Pipeline
-- Data Validation Module
-- SQLite Database
-- Database Loader
-- Load Audit Report
-- Data Quality Report
-- Final Validation Script
-- Sprint Reports
-- Project Documentation
+- Processed 90+ Nifty companies
+- Integrated 1000+ financial records
+- Automated ETL workflow
+- Financial KPI Engine
+- Cash Flow Intelligence
+- NLP-based Financial Parser
+- Automated PDF Report Generator
+- Interactive Dashboard
+- Sector Analytics
+- Portfolio Analytics
 
 ---
 
-# Future Enhancements
+# Future Improvements
 
-- Power BI Dashboard Integration
-- Tableau Dashboard
-- Automated ETL Scheduling
-- REST API using FastAPI
-- Cloud Database Deployment
-- Machine Learning for Financial Trend Analysis
+- Live NSE/BSE API Integration
+- AI Investment Recommendation Engine
+- Forecasting Models
+- Portfolio Optimisation
+- LLM-based Financial Chat Assistant
+- Real-time Alerts
 
 ---
 
 # Author
 
-**Syed Shaju**
+**Syed Shajahan**
 
 B.Tech – Data Science
-
-Nifty100 Financial Intelligence Project
 
 ---
 
 # License
 
-This project is developed for educational and academic purposes.
+This project is developed for educational and research purposes.

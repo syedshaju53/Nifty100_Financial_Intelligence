@@ -122,4 +122,3 @@ st.download_button(
     mime="text/csv"
 )
 
-st.success("✅ Capital Allocation Loaded Successfully")

@@ -1,0 +1,14 @@
+company_id,metric_type,raw_text
+HDFCBANK,compounded_sales_growth,TTM:            47%
+HDFCBANK,compounded_profit_growth,TTM:                27%
+HDFCBANK,roe,Last Year:    17%
+INFY,compounded_sales_growth,TTM:            3%
+INFY,compounded_profit_growth,TTM:                 8%
+INFY,roe,Last Year:     32%
+SBILIFE,compounded_sales_growth,TTM:            43%
+SBILIFE,compounded_profit_growth,TTM:                 18%
+SBILIFE,stock_price_cagr,1 Year:         -2%
+SBILIFE,roe,Last Year:      12%
+TCS,compounded_sales_growth,TTM:            5%
+TCS,compounded_profit_growth,TTM:                 8%
+TCS,roe,Last Year:       52%

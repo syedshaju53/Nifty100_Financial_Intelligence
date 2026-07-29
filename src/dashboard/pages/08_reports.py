@@ -63,4 +63,3 @@ st.download_button(
     mime="text/csv",
 )
 
-st.success("✅ Annual Reports Loaded Successfully")

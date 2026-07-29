@@ -194,4 +194,3 @@ st.dataframe(
     width="stretch",
 )
 
-st.success("✅ Trend Analysis Loaded Successfully")

@@ -239,4 +239,3 @@ st.download_button(
     mime="text/csv",
 )
 
-st.success("✅ Sector Analysis Loaded Successfully")
