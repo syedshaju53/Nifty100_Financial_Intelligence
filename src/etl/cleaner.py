@@ -26,7 +26,7 @@ def clean_dataframe(df):
     )
 
     # Trim whitespace from text columns
-    text_columns = df.select_dtypes(include="object").columns
+    text_columns = df.select_dtypes(include=["object", "string"]).columns
 
     for col in text_columns:
         df[col] = df[col].str.strip()

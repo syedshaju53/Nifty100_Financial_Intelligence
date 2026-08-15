@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title id="head-title">pytest_report.html</title>
+      <style type="text/css">body {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  /* do not increase min-width as some may use split screens */
+  min-width: 800px;
+  color: #999;
+}
+
+h1 {
+  font-size: 24px;
+  color: black;
+}
+
+h2 {
+  font-size: 16px;
+  color: black;
+}
+
+p {
+  color: black;
+}
+
+a {
+  color: #999;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+/******************************
+ * SUMMARY INFORMATION
+ ******************************/
+#environment td {
+  padding: 5px;
+  border: 1px solid #e6e6e6;
+  vertical-align: top;
+}
+#environment tr:nth-child(odd) {
+  background-color: #f6f6f6;
+}
+#environment ul {
+  margin: 0;
+  padding: 0 20px;
+}
+
+/******************************
+ * TEST RESULT COLORS
+ ******************************/
+span.passed,
+.passed .col-result {
+  color: green;
+}
+
+span.skipped,
+span.xfailed,
+span.rerun,
+.skipped .col-result,
+.xfailed .col-result,
+.rerun .col-result {
+  color: orange;
+}
+
+span.error,
+span.failed,
+span.xpassed,
+.error .col-result,
+.failed .col-result,
+.xpassed .col-result {
+  color: red;
+}
+
+.col-links__extra {
+  margin-right: 3px;
+}
+
+/******************************
+ * RESULTS TABLE
+ *
+ * 1. Table Layout
+ * 2. Extra
+ * 3. Sorting items
+ *
+ ******************************/
+/*------------------
+ * 1. Table Layout
+ *------------------*/
+#results-table {
+  border: 1px solid #e6e6e6;
+  color: #999;
+  font-size: 12px;
+  width: 100%;
+}
+#results-table th,
+#results-table td {
+  padding: 5px;
+  border: 1px solid #e6e6e6;
+  text-align: left;
+}
+#results-table th {
+  font-weight: bold;
+}
+
+/*------------------
+ * 2. Extra
+ *------------------*/
+.logwrapper {
+  max-height: 230px;
+  overflow-y: scroll;
+  background-color: #e6e6e6;
+}
+.logwrapper.expanded {
+  max-height: none;
+}
+.logwrapper.expanded .logexpander:after {
+  content: "collapse [-]";
+}
+.logwrapper .logexpander {
+  z-index: 1;
+  position: sticky;
+  top: 10px;
+  width: max-content;
+  border: 1px solid;
+  border-radius: 3px;
+  padding: 5px 7px;
+  margin: 10px 0 10px calc(100% - 80px);
+  cursor: pointer;
+  background-color: #e6e6e6;
+}
+.logwrapper .logexpander:after {
+  content: "expand [+]";
+}
+.logwrapper .logexpander:hover {
+  color: #000;
+  border-color: #000;
+}
+.logwrapper .log {
+  min-height: 40px;
+  position: relative;
+  top: -50px;
+  height: calc(100% + 50px);
+  border: 1px solid #e6e6e6;
+  color: black;
+  display: block;
+  font-family: "Courier New", Courier, monospace;
+  padding: 5px;
+  padding-right: 80px;
+  white-space: pre-wrap;
+}
+
+div.media {
+  border: 1px solid #e6e6e6;
+  float: right;
+  height: 240px;
+  margin: 0 5px;
+  overflow: hidden;
+  width: 320px;
+}
+
+.media-container {
+  display: grid;
+  grid-template-columns: 25px auto 25px;
+  align-items: center;
+  flex: 1 1;
+  overflow: hidden;
+  height: 200px;
+}
+
+.media-container--fullscreen {
+  grid-template-columns: 0px auto 0px;
+}
+
+.media-container__nav--right,
+.media-container__nav--left {
+  text-align: center;
+  cursor: pointer;
+}
+
+.media-container__viewport {
+  cursor: pointer;
+  text-align: center;
+  height: inherit;
+}
+.media-container__viewport img,
+.media-container__viewport video {
+  object-fit: cover;
+  width: 100%;
+  max-height: 100%;
+}
+
+.media__name,
+.media__counter {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex: 0 0 25px;
+  align-items: center;
+}
+
+.collapsible td:not(.col-links) {
+  cursor: pointer;
+}
+.collapsible td:not(.col-links):hover::after {
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+}
+
+.col-result {
+  width: 130px;
+}
+.col-result:hover::after {
+  content: " (hide details)";
+}
+
+.col-result.collapsed:hover::after {
+  content: " (show details)";
+}
+
+#environment-header h2:hover::after {
+  content: " (hide details)";
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+#environment-header.collapsed h2:hover::after {
+  content: " (show details)";
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/*------------------
+ * 3. Sorting items
+ *------------------*/
+.sortable {
+  cursor: pointer;
+}
+.sortable.desc:after {
+  content: " ";
+  position: relative;
+  left: 5px;
+  bottom: -12.5px;
+  border: 10px solid #4caf50;
+  border-bottom: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+}
+.sortable.asc:after {
+  content: " ";
+  position: relative;
+  left: 5px;
+  bottom: 12.5px;
+  border: 10px solid #4caf50;
+  border-top: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+}
+
+.hidden, .summary__reload__button.hidden {
+  display: none;
+}
+
+.summary__data {
+  flex: 0 0 550px;
+}
+.summary__reload {
+  flex: 1 1;
+  display: flex;
+  justify-content: center;
+}
+.summary__reload__button {
+  flex: 0 0 300px;
+  display: flex;
+  color: white;
+  font-weight: bold;
+  background-color: #4caf50;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.summary__reload__button:hover {
+  background-color: #46a049;
+}
+.summary__spacer {
+  flex: 0 0 550px;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+}
+
+.filters,
+.collapse {
+  display: flex;
+  align-items: center;
+}
+.filters button,
+.collapse button {
+  color: #999;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.filters button:hover,
+.collapse button:hover {
+  color: #ccc;
+}
+
+.filter__label {
+  margin-right: 10px;
+}
+
+      </style>
+    
+  </head>
+  <body>
+    <h1 id="title">pytest_report.html</h1>
+    <p>Report generated on 15-Aug-2026 at 09:50:30 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a>
+        v4.2.0</p>
+    <div id="environment-header">
+      <h2>Environment</h2>
+    </div>
+    <table id="environment"></table>
+    <!-- TEMPLATES -->
+      <template id="template_environment_row">
+      <tr>
+        <td></td>
+        <td></td>
+      </tr>
+    </template>
+    <template id="template_results-table__body--empty">
+      <tbody class="results-table-row">
+        <tr id="not-found-message">
+          <td colspan="4">No results found. Check the filters.</td>
+        </tr>
+      </tbody>
+    </template>
+    <template id="template_results-table__tbody">
+      <tbody class="results-table-row">
+        <tr class="collapsible">
+        </tr>
+        <tr class="extras-row">
+          <td class="extra" colspan="4">
+            <div class="extraHTML"></div>
+            <div class="media">
+              <div class="media-container">
+                  <div class="media-container__nav--left">&lt;</div>
+                  <div class="media-container__viewport">
+                    <img src="" />
+                    <video controls>
+                      <source src="" type="video/mp4">
+                    </video>
+                  </div>
+                  <div class="media-container__nav--right">&gt;</div>
+                </div>
+                <div class="media__name"></div>
+                <div class="media__counter"></div>
+            </div>
+            <div class="logwrapper">
+              <div class="logexpander"></div>
+              <div class="log"></div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </template>
+    <!-- END TEMPLATES -->
+    <div class="summary">
+      <div class="summary__data">
+        <h2>Summary</h2>
+        <div class="additional-summary prefix">
+        </div>
+        <p class="run-count">57 tests took 999 ms.</p>
+        <p class="filter">(Un)check the boxes to filter the results.</p>
+        <div class="summary__reload">
+          <div class="summary__reload__button hidden" onclick="location.reload()">
+            <div>There are still tests running. <br />Reload this page to get the latest results!</div>
+          </div>
+        </div>
+        <div class="summary__spacer"></div>
+        <div class="controls">
+          <div class="filters">
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="failed" disabled>
+            <span class="failed">0 Failed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="passed" >
+            <span class="passed">57 Passed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="skipped" disabled>
+            <span class="skipped">0 Skipped,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xfailed" disabled>
+            <span class="xfailed">0 Expected failures,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xpassed" disabled>
+            <span class="xpassed">0 Unexpected passes,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="error" disabled>
+            <span class="error">0 Errors,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="rerun" disabled>
+            <span class="rerun">0 Reruns</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="retried" disabled>
+            <span class="retried">0 Retried,</span>
+          </div>
+          <div class="collapse">
+            <button id="show_all_details">Show all details</button>&nbsp;/&nbsp;<button id="hide_all_details">Hide all details</button>
+          </div>
+        </div>
+      </div>
+      <div class="additional-summary summary">
+      </div>
+      <div class="additional-summary postfix">
+      </div>
+    </div>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable" data-column-type="result">Result</th>
+          <th class="sortable" data-column-type="testId">Test</th>
+          <th class="sortable" data-column-type="duration">Duration</th>
+          <th>Links</th>
+        </tr>
+      </thead>
+    </table>
+  <footer>
+    <div id="data-container" data-jsonblob="{&#34;environment&#34;: {&#34;Python&#34;: &#34;3.13.7&#34;, &#34;Platform&#34;: &#34;macOS-14.5-arm64-arm-64bit-Mach-O&#34;, &#34;Packages&#34;: {&#34;pytest&#34;: &#34;9.1.1&#34;, &#34;pluggy&#34;: &#34;1.6.0&#34;}, &#34;Plugins&#34;: {&#34;metadata&#34;: &#34;3.1.1&#34;, &#34;html&#34;: &#34;4.2.0&#34;, &#34;anyio&#34;: &#34;4.14.2&#34;}}, &#34;tests&#34;: {&#34;tests/analytics/test_carg.py::TestCAGR::test_both_negative&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_carg.py::TestCAGR::test_both_negative&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_carg.py::TestCAGR::test_both_negative&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_carg.py::TestCAGR::test_decline_to_loss&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_carg.py::TestCAGR::test_decline_to_loss&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_carg.py::TestCAGR::test_decline_to_loss&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_carg.py::TestCAGR::test_eps_cagr&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_carg.py::TestCAGR::test_eps_cagr&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_carg.py::TestCAGR::test_eps_cagr&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_carg.py::TestCAGR::test_insufficient&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_carg.py::TestCAGR::test_insufficient&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_carg.py::TestCAGR::test_insufficient&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_carg.py::TestCAGR::test_long_term&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_carg.py::TestCAGR::test_long_term&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_carg.py::TestCAGR::test_long_term&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_carg.py::TestCAGR::test_normal_cagr&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_carg.py::TestCAGR::test_normal_cagr&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_carg.py::TestCAGR::test_normal_cagr&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_carg.py::TestCAGR::test_pat_cagr&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_carg.py::TestCAGR::test_pat_cagr&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_carg.py::TestCAGR::test_pat_cagr&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_carg.py::TestCAGR::test_revenue_cagr&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_carg.py::TestCAGR::test_revenue_cagr&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_carg.py::TestCAGR::test_revenue_cagr&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_carg.py::TestCAGR::test_turnaround&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_carg.py::TestCAGR::test_turnaround&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_carg.py::TestCAGR::test_turnaround&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_carg.py::TestCAGR::test_zero_base&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_carg.py::TestCAGR::test_zero_base&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_carg.py::TestCAGR::test_zero_base&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capex_asset_light&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capex_asset_light&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capex_asset_light&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capex_capital_intensive&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capex_capital_intensive&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capex_capital_intensive&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capex_moderate&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capex_moderate&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capex_moderate&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capex_zero_sales&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capex_zero_sales&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capex_zero_sales&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_cash_accumulator&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_cash_accumulator&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_cash_accumulator&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_distress&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_distress&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_distress&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_growth_debt&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_growth_debt&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_growth_debt&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_liquidating_assets&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_liquidating_assets&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_liquidating_assets&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_mixed&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_mixed&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_mixed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_pre_revenue&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_pre_revenue&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_pre_revenue&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_reinvestor&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_reinvestor&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_reinvestor&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_shareholder_returns&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_shareholder_returns&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_capital_allocation_shareholder_returns&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_cfo_quality_accrual_risk&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_cfo_quality_accrual_risk&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_cfo_quality_accrual_risk&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_cfo_quality_high&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_cfo_quality_high&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_cfo_quality_high&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_cfo_quality_moderate&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_cfo_quality_moderate&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_cfo_quality_moderate&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_cfo_quality_zero_pat&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_cfo_quality_zero_pat&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_cfo_quality_zero_pat&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_fcf_conversion&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_fcf_conversion&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_fcf_conversion&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_fcf_conversion_zero_operating_profit&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_fcf_conversion_zero_operating_profit&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_fcf_conversion_zero_operating_profit&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_free_cash_flow_negative&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_free_cash_flow_negative&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_free_cash_flow_negative&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_free_cash_flow_positive&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_free_cash_flow_positive&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_cashflow.py::TestCashFlowKPIs::test_free_cash_flow_positive&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_asset_turnover&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_asset_turnover&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_leverage.py::TestLeverageRatios::test_asset_turnover&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_asset_turnover_zero_assets&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_asset_turnover_zero_assets&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_leverage.py::TestLeverageRatios::test_asset_turnover_zero_assets&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_debt_to_equity_debt_free&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_debt_to_equity_debt_free&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_leverage.py::TestLeverageRatios::test_debt_to_equity_debt_free&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_debt_to_equity_negative_equity&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_debt_to_equity_negative_equity&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_leverage.py::TestLeverageRatios::test_debt_to_equity_negative_equity&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_debt_to_equity_normal&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_debt_to_equity_normal&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_leverage.py::TestLeverageRatios::test_debt_to_equity_normal&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_financial_sector_no_flag&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_financial_sector_no_flag&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_leverage.py::TestLeverageRatios::test_financial_sector_no_flag&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_high_leverage_flag&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_high_leverage_flag&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_leverage.py::TestLeverageRatios::test_high_leverage_flag&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_icr_label&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_icr_label&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_leverage.py::TestLeverageRatios::test_icr_label&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_icr_warning&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_icr_warning&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_leverage.py::TestLeverageRatios::test_icr_warning&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_interest_coverage_ratio&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_interest_coverage_ratio&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_leverage.py::TestLeverageRatios::test_interest_coverage_ratio&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_interest_zero&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_interest_zero&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_leverage.py::TestLeverageRatios::test_interest_zero&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_net_debt&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_leverage.py::TestLeverageRatios::test_net_debt&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_leverage.py::TestLeverageRatios::test_net_debt&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_negative_equity&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_negative_equity&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_negative_equity&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_net_profit_margin&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_net_profit_margin&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_net_profit_margin&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_net_profit_margin_zero_sales&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_net_profit_margin_zero_sales&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_net_profit_margin_zero_sales&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_operating_profit_margin&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_operating_profit_margin&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_operating_profit_margin&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_opm_crosscheck&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_opm_crosscheck&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_opm_crosscheck&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_return_on_assets&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_return_on_assets&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_return_on_assets&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_return_on_assets_zero&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_return_on_assets_zero&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_return_on_assets_zero&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_return_on_capital_employed&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_return_on_capital_employed&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_return_on_capital_employed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_return_on_equity&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_return_on_equity&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_return_on_equity&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_roce_benchmark_average&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_roce_benchmark_average&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_roce_benchmark_average&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_roce_benchmark_financials&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_roce_benchmark_financials&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_roce_benchmark_financials&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_roce_benchmark_good&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_roce_benchmark_good&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_roce_benchmark_good&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_roce_benchmark_poor&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_roce_benchmark_poor&#34;, &#34;duration&#34;: &#34;0 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/analytics/test_profitability.py::TestProfitabilityRatios::test_roce_benchmark_poor&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;0 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;tests/api/test_api.py::test_api_endpoints&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/api/test_api.py::test_api_endpoints&#34;, &#34;duration&#34;: &#34;76 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/api/test_api.py::test_api_endpoints&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;76 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\n\n============================================================\nNIFTY100 FINANCIAL INTELLIGENCE API TEST\n============================================================\n\n============================================================\nTesting: http://127.0.0.1:8000/api/v1/health\nStatus: 200\nPASS\nResponse:\n{\n  &amp;quot;status&amp;quot;: &amp;quot;ok&amp;quot;,\n  &amp;quot;service&amp;quot;: &amp;quot;Nifty100 Financial Intelligence API&amp;quot;,\n  &amp;quot;version&amp;quot;: &amp;quot;1.0.0&amp;quot;,\n  &amp;quot;timestamp&amp;quot;: &amp;quot;2026-08-15T04:20:29.969992+00:00&amp;quot;,\n  &amp;quot;uptime_seconds&amp;quot;: 447.48,\n  &amp;quot;database&amp;quot;: {\n    &amp;quot;status&amp;quot;: &amp;quot;connected&amp;quot;,\n    &amp;quot;db_row_counts&amp;quot;: {\n      &amp;quot;analysis&amp;quot;: 16,\n      &amp;quot;balance_sheet&amp;quot;: 1227,\n      &amp;quot;cash_flow&amp;quot;: 1091,\n      &amp;quot;companies&amp;quot;: 92,\n      &amp;quot;documents&amp;quot;: 1457,\n      &amp;quot;financial_health_scores&amp;quot;: 1041,\n      &amp;quot;financial_ratios&amp;quot;: 1073,\n      &amp;quot;market_cap&amp;quot;: 552,\n      &amp;quot;master_financials&amp;quot;: 1073,\n      &amp;quot;peer_groups&amp;quot;: 56,\n      &amp;quot;peer_percentiles&amp;quot;: 6470,\n      &amp;quot;profit_loss&amp;quot;: 1177,\n      &amp;quot;pros_and_cons&amp;quot;: 14,\n      &amp;quot;ratios&amp;quot;: 1160,\n      &amp;quot;sectors&amp;quot;: 92,\n      &amp;quot;stock_prices&amp;quot;: 5520\n    },\n    &amp;quot;companies&amp;quot;: 92,\n    &amp;quot;master_companies&amp;quot;: 92,\n    &amp;quot;master_financial_rows&amp;quot;: 1073\n  }\n}\n\n============================================================\nTesting: http://127.0.0.1:8000/api/v1\nStatus: 200\nPASS\nResponse:\n{\n  &amp;quot;name&amp;quot;: &amp;quot;Nifty100 Financial Intelligence API&amp;quot;,\n  &amp;quot;version&amp;quot;: &amp;quot;1.0.0&amp;quot;,\n  &amp;quot;status&amp;quot;: &amp;quot;running&amp;quot;,\n  &amp;quot;uptime_seconds&amp;quot;: 447.23,\n  &amp;quot;endpoints&amp;quot;: {\n    &amp;quot;health&amp;quot;: &amp;quot;/api/v1/health&amp;quot;,\n    &amp;quot;companies&amp;quot;: &amp;quot;/api/v1/companies&amp;quot;,\n    &amp;quot;company&amp;quot;: &amp;quot;/api/v1/companies/{company_id}&amp;quot;,\n    &amp;quot;search&amp;quot;: &amp;quot;/api/v1/companies/search/query?q=...&amp;quot;,\n    &amp;quot;swagger&amp;quot;: &amp;quot;/docs&amp;quot;,\n    &amp;quot;redoc&amp;quot;: &amp;quot;/redoc&amp;quot;\n  }\n}\n\n============================================================\nTesting: http://127.0.0.1:8000/api/v1/companies\nStatus: 200\nPASS\nResponse:\n{\n  &amp;quot;status&amp;quot;: &amp;quot;success&amp;quot;,\n  &amp;quot;count&amp;quot;: 92,\n  &amp;quot;filters&amp;quot;: {\n    &amp;quot;search&amp;quot;: null,\n    &amp;quot;sector&amp;quot;: null,\n    &amp;quot;limit&amp;quot;: 92\n  },\n  &amp;quot;data&amp;quot;: [\n    {\n      &amp;quot;id&amp;quot;: &amp;quot;ABB&amp;quot;,\n      &amp;quot;company_name&amp;quot;: &amp;quot;Abbott India Ltd&amp;quot;,\n      &amp;quot;broad_sector&amp;quot;: &amp;quot;Industrials&amp;quot;,\n      &amp;quot;sub_sector&amp;quot;: &amp;quot;Capital Goods&amp;quot;,\n      &amp;quot;roe_pct&amp;quot;: 34.9,\n      &amp;quot;roce_pct&amp;quot;: 46.0,\n      &amp;quot;market_cap_category&amp;quot;: &amp;quot;Large Cap&amp;quot;,\n      &amp;quot;index_weight_pct&amp;quot;: 0.81\n    },\n    {\n      &amp;quot;id&amp;quot;: &amp;quot;ADANIENSOL&amp;quot;,\n      &amp;quot;company_name&amp;quot;: &amp;quot;Adani Energy Solutions Ltd&amp;quot;,\n      &amp;quot;broad_sector&amp;quot;: &amp;quot;Energy&amp;quot;,\n      &amp;quot;sub_sector&amp;quot;: &amp;quot;Power &amp;amp; Utilities&amp;quot;,\n      &amp;quot;roe_pct&amp;quot;: 8.59,\n      &amp;quot;roce_pct&amp;quot;: 9.0,\n      &amp;quot;market_cap_category&amp;quot;: &amp;quot;Large Cap&amp;quot;,\n      &amp;quot;index_weight_pct&amp;quot;: 0.65\n    },\n    {\n      &amp;quot;id&amp;quot;: &amp;quot;ADANIENT&amp;quot;,\n      &amp;quot;company_name&amp;quot;: &amp;quot;Adani Enterprises Ltd&amp;quot;,\n      &amp;quot;broad_sector&amp;quot;: &amp;quot;Industrials&amp;quot;,\n      &amp;quot;sub_sector&amp;quot;: &amp;quot;Conglomerates&amp;quot;,\n      &amp;quot;roe_pct&amp;quot;: 13.64,\n      &amp;quot;roce_pct&amp;quot;: 11.6,\n      &amp;quot;market_cap_category&amp;quot;: &amp;quot;Large Cap&amp;quot;,\n      &amp;quot;index_weight_pct&amp;quot;: 1.5\n    },\n    {\n      &amp;quot;id&amp;quot;: &amp;quot;ADANIGREEN&amp;quot;,\n      &amp;quot;comp\n\n============================================================\nTesting: http://127.0.0.1:8000/api/v1/companies/SBIN\nStatus: 200\nPASS\nResponse:\n{\n  &amp;quot;status&amp;quot;: &amp;quot;success&amp;quot;,\n  &amp;quot;data&amp;quot;: {\n    &amp;quot;id&amp;quot;: &amp;quot;SBIN&amp;quot;,\n    &amp;quot;company_name&amp;quot;: &amp;quot;State Bank of India&amp;quot;,\n    &amp;quot;company_logo&amp;quot;: &amp;quot;https://mkt.in/static/mkt-icons/nifty100/SBIN.png&amp;quot;,\n    &amp;quot;chart_link&amp;quot;: &amp;quot;https://in.tradingview.com/chart/qGsydD2w/?symbol=NSE%3AAMBUJACEM.T0&amp;quot;,\n    &amp;quot;about_company&amp;quot;: &amp;quot;State Bank of India is a Fortune 500 company. It is an Indian Multinational, Public Sector banking and financial services statutory body headquartered in Mumbai. It is the largest and oldest bank in India with over 200 years of history.[1]&amp;quot;,\n    &amp;quot;website&amp;quot;: &amp;quot;https://sbi.co.in/&amp;quot;,\n    &amp;quot;nse_profile&amp;quot;: &amp;quot;https://www.nseindia.com/get-quotes/equity?symbol=SBIN&amp;quot;,\n    &amp;quot;bse_profile&amp;quot;: &amp;quot;https://www.bseindia.com/stock-share-price/state-bank-of-india/SBIN/500112/&amp;quot;,\n    &amp;quot;face_value&amp;quot;: 1.0,\n    &amp;quot;book_value&amp;quot;: 465.0,\n    &amp;quot;roce_percentage&amp;quot;: 6.16,\n    &amp;quot;roe_percentage&amp;quot;: 17.3,\n    &amp;quot;broad_sector&amp;quot;: &amp;quot;Financials&amp;quot;,\n    &amp;quot;sub_sector&amp;quot;: &amp;quot;Public Sector Banks&amp;quot;,\n    &amp;quot;index_weight_pct&amp;quot;: 3.6,\n    &amp;quot;market_cap_category&amp;quot;: &amp;quot;Large Cap&amp;quot;\n  }\n}\n\n============================================================\nTesting: http://127.0.0.1:8000/api/v1/companies/ATGL\nStatus: 200\nPASS\nResponse:\n{\n  &amp;quot;status&amp;quot;: &amp;quot;success&amp;quot;,\n  &amp;quot;data&amp;quot;: {\n    &amp;quot;id&amp;quot;: &amp;quot;ATGL&amp;quot;,\n    &amp;quot;company_name&amp;quot;: &amp;quot;Adani Total Gas Ltd&amp;quot;,\n    &amp;quot;company_logo&amp;quot;: &amp;quot;https://mkt.in/static/mkt-icons/nifty100/ATGL.png&amp;quot;,\n    &amp;quot;chart_link&amp;quot;: &amp;quot;https://in.tradingview.com/chart/?symbol=NSE%3AATGL&amp;quot;,\n    &amp;quot;about_company&amp;quot;: &amp;quot;AGL is engaged in City Gas Distribution (CGD) business and supplies natural gas to domestic, commercial, industrial and vehicle users.&amp;quot;,\n    &amp;quot;website&amp;quot;: &amp;quot;http://www.adanigas.com/&amp;quot;,\n    &amp;quot;nse_profile&amp;quot;: &amp;quot;https://www.nseindia.com/get-quotes/equity?symbol=ATGL&amp;quot;,\n    &amp;quot;bse_profile&amp;quot;: &amp;quot;https://www.bseindia.com/stock-share-price/adani-total-gas-ltd/ATGL/542066/&amp;quot;,\n    &amp;quot;face_value&amp;quot;: 1.0,\n    &amp;quot;book_value&amp;quot;: 36.0,\n    &amp;quot;roce_percentage&amp;quot;: 21.2,\n    &amp;quot;roe_percentage&amp;quot;: 20.5,\n    &amp;quot;broad_sector&amp;quot;: &amp;quot;Energy&amp;quot;,\n    &amp;quot;sub_sector&amp;quot;: &amp;quot;Gas Distribution&amp;quot;,\n    &amp;quot;index_weight_pct&amp;quot;: 0.6,\n    &amp;quot;market_cap_category&amp;quot;: &amp;quot;Large Cap&amp;quot;\n  }\n}\n\n============================================================\nTesting: http://127.0.0.1:8000/api/v1/companies/search/query?q=tata\nStatus: 200\nPASS\nResponse:\n{\n  &amp;quot;status&amp;quot;: &amp;quot;success&amp;quot;,\n  &amp;quot;query&amp;quot;: &amp;quot;tata&amp;quot;,\n  &amp;quot;count&amp;quot;: 5,\n  &amp;quot;data&amp;quot;: [\n    {\n      &amp;quot;id&amp;quot;: &amp;quot;TCS&amp;quot;,\n      &amp;quot;company_name&amp;quot;: &amp;quot;Tata Consultancy Services Ltd&amp;quot;,\n      &amp;quot;broad_sector&amp;quot;: &amp;quot;Information Technology&amp;quot;,\n      &amp;quot;sub_sector&amp;quot;: &amp;quot;IT Services&amp;quot;,\n      &amp;quot;roe_pct&amp;quot;: 0.52,\n      &amp;quot;roce_pct&amp;quot;: 64.3,\n      &amp;quot;market_cap_category&amp;quot;: &amp;quot;Large Cap&amp;quot;,\n      &amp;quot;index_weight_pct&amp;quot;: 1.1\n    },\n    {\n      &amp;quot;id&amp;quot;: &amp;quot;TATACONSUM&amp;quot;,\n      &amp;quot;company_name&amp;quot;: &amp;quot;Tata Consumer Products Ltd&amp;quot;,\n      &amp;quot;broad_sector&amp;quot;: &amp;quot;Consumer Staples&amp;quot;,\n      &amp;quot;sub_sector&amp;quot;: &amp;quot;Food &amp;amp; Beverages&amp;quot;,\n      &amp;quot;roe_pct&amp;quot;: 8.32,\n      &amp;quot;roce_pct&amp;quot;: 10.6,\n      &amp;quot;market_cap_category&amp;quot;: &amp;quot;Large Cap&amp;quot;,\n      &amp;quot;index_weight_pct&amp;quot;: 0.33\n    },\n    {\n      &amp;quot;id&amp;quot;: &amp;quot;TATAMOTORS&amp;quot;,\n      &amp;quot;company_name&amp;quot;: &amp;quot;Tata Motors Ltd&amp;quot;,\n      &amp;quot;broad_sector&amp;quot;: &amp;quot;Consumer Discretionary&amp;quot;,\n      &amp;quot;sub_sector&amp;quot;: &amp;quot;Automobiles&amp;quot;,\n      &amp;quot;roe_pct&amp;quot;: 49.4,\n      &amp;quot;roce_pct&amp;quot;: 20.1,\n      &amp;quot;market_cap_category&amp;quot;: &amp;quot;Large Cap&amp;quot;,\n      &amp;quot;index_weight_pct&amp;quot;: 0.91\n    },\n    {\n      &amp;quot;id&amp;quot;: &amp;quot;TATAPOWER&amp;quot;,\n      &amp;quot;company_name&amp;quot;: &amp;quot;Tata Power \n\n============================================================\nTesting: http://127.0.0.1:8000/api/v1/financials/SBIN\nStatus: 200\nPASS\nResponse:\n{\n  &amp;quot;status&amp;quot;: &amp;quot;success&amp;quot;,\n  &amp;quot;company_id&amp;quot;: &amp;quot;SBIN&amp;quot;,\n  &amp;quot;count&amp;quot;: 12,\n  &amp;quot;data&amp;quot;: [\n    {\n      &amp;quot;company_id&amp;quot;: &amp;quot;SBIN&amp;quot;,\n      &amp;quot;year&amp;quot;: 2013,\n      &amp;quot;net_profit_margin_pct&amp;quot;: 11.05,\n      &amp;quot;operating_profit_margin_pct&amp;quot;: -3.05,\n      &amp;quot;return_on_equity_pct&amp;quot;: null,\n      &amp;quot;debt_to_equity&amp;quot;: null,\n      &amp;quot;interest_coverage&amp;quot;: 0.26,\n      &amp;quot;asset_turnover&amp;quot;: null,\n      &amp;quot;sales&amp;quot;: 167976.0,\n      &amp;quot;expenses&amp;quot;: 66283.0,\n      &amp;quot;operating_profit&amp;quot;: -5124.0,\n      &amp;quot;opm_percentage&amp;quot;: -3.05,\n      &amp;quot;other_income&amp;quot;: 32584.0,\n      &amp;quot;interest&amp;quot;: 106818.0,\n      &amp;quot;depreciation&amp;quot;: 1577.0,\n      &amp;quot;profit_before_tax&amp;quot;: 25882.0,\n      &amp;quot;tax_percentage&amp;quot;: 29.0,\n      &amp;quot;net_profit&amp;quot;: 18555.0,\n      &amp;quot;eps&amp;quot;: 26.0,\n      &amp;quot;dividend_payout&amp;quot;: 16.0,\n      &amp;quot;operating_activity&amp;quot;: 24332.0,\n      &amp;quot;investing_activity&amp;quot;: -2271.0,\n      &amp;quot;financing_activity&amp;quot;: -4424.0,\n      &amp;quot;net_cash_flow&amp;quot;: 17637.0,\n      &amp;quot;free_cash_flow&amp;quot;: 22061.0,\n      &amp;quot;market_cap_crore&amp;quot;: null,\n      &amp;quot;enterprise_value_crore&amp;quot;: null,\n      &amp;quot;pe_ratio&amp;quot;: null,\n      &amp;quot;pb_ratio&amp;quot;: null,\n      &amp;quot;ev_ebi\n\n============================================================\nTesting: http://127.0.0.1:8000/api/v1/financials/SBIN/latest\nStatus: 200\nPASS\nResponse:\n{\n  &amp;quot;status&amp;quot;: &amp;quot;success&amp;quot;,\n  &amp;quot;company_id&amp;quot;: &amp;quot;SBIN&amp;quot;,\n  &amp;quot;year&amp;quot;: 2024,\n  &amp;quot;data&amp;quot;: {\n    &amp;quot;company_id&amp;quot;: &amp;quot;SBIN&amp;quot;,\n    &amp;quot;year&amp;quot;: 2024,\n    &amp;quot;net_profit_margin_pct&amp;quot;: 15.83,\n    &amp;quot;operating_profit_margin_pct&amp;quot;: -13.73,\n    &amp;quot;return_on_equity_pct&amp;quot;: null,\n    &amp;quot;debt_to_equity&amp;quot;: null,\n    &amp;quot;interest_coverage&amp;quot;: 0.37,\n    &amp;quot;asset_turnover&amp;quot;: null,\n    &amp;quot;sales&amp;quot;: 439189.0,\n    &amp;quot;expenses&amp;quot;: 239750.0,\n    &amp;quot;operating_profit&amp;quot;: -60297.0,\n    &amp;quot;opm_percentage&amp;quot;: -13.73,\n    &amp;quot;other_income&amp;quot;: 155386.0,\n    &amp;quot;interest&amp;quot;: 259736.0,\n    &amp;quot;depreciation&amp;quot;: 3849.0,\n    &amp;quot;profit_before_tax&amp;quot;: 91240.0,\n    &amp;quot;tax_percentage&amp;quot;: 25.0,\n    &amp;quot;net_profit&amp;quot;: 69543.0,\n    &amp;quot;eps&amp;quot;: 75.0,\n    &amp;quot;dividend_payout&amp;quot;: 18.0,\n    &amp;quot;operating_activity&amp;quot;: 21632.0,\n    &amp;quot;investing_activity&amp;quot;: -3476.0,\n    &amp;quot;financing_activity&amp;quot;: -9896.0,\n    &amp;quot;net_cash_flow&amp;quot;: 8260.0,\n    &amp;quot;free_cash_flow&amp;quot;: 18156.0,\n    &amp;quot;market_cap_crore&amp;quot;: 2400436.05,\n    &amp;quot;enterprise_value_crore&amp;quot;: 2686824.35,\n    &amp;quot;pe_ratio&amp;quot;: 54.93,\n    &amp;quot;pb_ratio&amp;quot;: 2.72,\n    &amp;quot;ev_ebitda&amp;quot;: 21.53,\n    &amp;quot;dividend_yield_pct&amp;quot;: 0.42,\n   \n\n============================================================\nTesting: http://127.0.0.1:8000/api/v1/financials/SBIN/cagr\nStatus: 200\nPASS\nResponse:\n{\n  &amp;quot;status&amp;quot;: &amp;quot;success&amp;quot;,\n  &amp;quot;company_id&amp;quot;: &amp;quot;SBIN&amp;quot;,\n  &amp;quot;year&amp;quot;: 2024,\n  &amp;quot;cagr&amp;quot;: {\n    &amp;quot;revenue_cagr_5yr&amp;quot;: 11.63,\n    &amp;quot;pat_cagr_5yr&amp;quot;: 83.41,\n    &amp;quot;eps_cagr_5yr&amp;quot;: 90.37,\n    &amp;quot;fcf_cagr_5yr&amp;quot;: -9.42\n  }\n}\n\n============================================================\nTesting: http://127.0.0.1:8000/api/v1/financials/SBIN/valuation\nStatus: 200\nPASS\nResponse:\n{\n  &amp;quot;status&amp;quot;: &amp;quot;success&amp;quot;,\n  &amp;quot;company_id&amp;quot;: &amp;quot;SBIN&amp;quot;,\n  &amp;quot;year&amp;quot;: 2024,\n  &amp;quot;valuation&amp;quot;: {\n    &amp;quot;market_cap_crore&amp;quot;: 2400436.05,\n    &amp;quot;enterprise_value_crore&amp;quot;: 2686824.35,\n    &amp;quot;pe_ratio&amp;quot;: 54.93,\n    &amp;quot;pb_ratio&amp;quot;: 2.72,\n    &amp;quot;ev_ebitda&amp;quot;: 21.53,\n    &amp;quot;dividend_yield_pct&amp;quot;: 0.42\n  }\n}\n\n============================================================\nTesting: http://127.0.0.1:8000/api/v1/financials/ATGL\nStatus: 200\nPASS\nResponse:\n{\n  &amp;quot;status&amp;quot;: &amp;quot;success&amp;quot;,\n  &amp;quot;company_id&amp;quot;: &amp;quot;ATGL&amp;quot;,\n  &amp;quot;count&amp;quot;: 7,\n  &amp;quot;data&amp;quot;: [\n    {\n      &amp;quot;company_id&amp;quot;: &amp;quot;ATGL&amp;quot;,\n      &amp;quot;year&amp;quot;: 2018,\n      &amp;quot;net_profit_margin_pct&amp;quot;: 11.79,\n      &amp;quot;operating_profit_margin_pct&amp;quot;: 26.64,\n      &amp;quot;return_on_equity_pct&amp;quot;: 15.94,\n      &amp;quot;debt_to_equity&amp;quot;: 1.32,\n      &amp;quot;interest_coverage&amp;quot;: 3.57,\n      &amp;quot;asset_turnover&amp;quot;: 0.49,\n      &amp;quot;sales&amp;quot;: 1374.0,\n      &amp;quot;expenses&amp;quot;: 1008.0,\n      &amp;quot;operating_profit&amp;quot;: 366.0,\n      &amp;quot;opm_percentage&amp;quot;: 26.64,\n      &amp;quot;other_income&amp;quot;: 80.0,\n      &amp;quot;interest&amp;quot;: 125.0,\n      &amp;quot;depreciation&amp;quot;: 61.0,\n      &amp;quot;profit_before_tax&amp;quot;: 259.0,\n      &amp;quot;tax_percentage&amp;quot;: 36.0,\n      &amp;quot;net_profit&amp;quot;: 162.0,\n      &amp;quot;eps&amp;quot;: 6.0,\n      &amp;quot;dividend_payout&amp;quot;: 0.0,\n      &amp;quot;operating_activity&amp;quot;: null,\n      &amp;quot;investing_activity&amp;quot;: null,\n      &amp;quot;financing_activity&amp;quot;: null,\n      &amp;quot;net_cash_flow&amp;quot;: null,\n      &amp;quot;free_cash_flow&amp;quot;: null,\n      &amp;quot;market_cap_crore&amp;quot;: null,\n      &amp;quot;enterprise_value_crore&amp;quot;: null,\n      &amp;quot;pe_ratio&amp;quot;: null,\n      &amp;quot;pb_ratio&amp;quot;: null,\n      &amp;quot;ev_ebitda&amp;quot;: null,\n      &amp;quot;dividend_yield_\n\n============================================================\nTesting: http://127.0.0.1:8000/api/v1/financials/ATGL/latest\nStatus: 200\nPASS\nResponse:\n{\n  &amp;quot;status&amp;quot;: &amp;quot;success&amp;quot;,\n  &amp;quot;company_id&amp;quot;: &amp;quot;ATGL&amp;quot;,\n  &amp;quot;year&amp;quot;: 2024,\n  &amp;quot;data&amp;quot;: {\n    &amp;quot;company_id&amp;quot;: &amp;quot;ATGL&amp;quot;,\n    &amp;quot;year&amp;quot;: 2024,\n    &amp;quot;net_profit_margin_pct&amp;quot;: 14.93,\n    &amp;quot;operating_profit_margin_pct&amp;quot;: 24.67,\n    &amp;quot;return_on_equity_pct&amp;quot;: 18.66,\n    &amp;quot;debt_to_equity&amp;quot;: 0.43,\n    &amp;quot;interest_coverage&amp;quot;: 10.5,\n    &amp;quot;asset_turnover&amp;quot;: 0.68,\n    &amp;quot;sales&amp;quot;: 4475.0,\n    &amp;quot;expenses&amp;quot;: 3371.0,\n    &amp;quot;operating_profit&amp;quot;: 1104.0,\n    &amp;quot;opm_percentage&amp;quot;: 24.67,\n    &amp;quot;other_income&amp;quot;: 62.0,\n    &amp;quot;interest&amp;quot;: 111.0,\n    &amp;quot;depreciation&amp;quot;: 158.0,\n    &amp;quot;profit_before_tax&amp;quot;: 896.0,\n    &amp;quot;tax_percentage&amp;quot;: 26.0,\n    &amp;quot;net_profit&amp;quot;: 668.0,\n    &amp;quot;eps&amp;quot;: 6.0,\n    &amp;quot;dividend_payout&amp;quot;: 4.0,\n    &amp;quot;operating_activity&amp;quot;: null,\n    &amp;quot;investing_activity&amp;quot;: null,\n    &amp;quot;financing_activity&amp;quot;: null,\n    &amp;quot;net_cash_flow&amp;quot;: null,\n    &amp;quot;free_cash_flow&amp;quot;: null,\n    &amp;quot;market_cap_crore&amp;quot;: 1535602.41,\n    &amp;quot;enterprise_value_crore&amp;quot;: 1925338.89,\n    &amp;quot;pe_ratio&amp;quot;: 56.96,\n    &amp;quot;pb_ratio&amp;quot;: 5.76,\n    &amp;quot;ev_ebitda&amp;quot;: 28.93,\n    &amp;quot;dividend_yield_pct&amp;quot;: 0.51,\n    &amp;quot;revenue_cagr_5yr&amp;quot;: 21.09,\n    &amp;quot;pa\n\n============================================================\nTesting: http://127.0.0.1:8000/api/v1/financials/ATGL/cagr\nStatus: 200\nPASS\nResponse:\n{\n  &amp;quot;status&amp;quot;: &amp;quot;success&amp;quot;,\n  &amp;quot;company_id&amp;quot;: &amp;quot;ATGL&amp;quot;,\n  &amp;quot;year&amp;quot;: 2024,\n  &amp;quot;cagr&amp;quot;: {\n    &amp;quot;revenue_cagr_5yr&amp;quot;: 21.09,\n    &amp;quot;pat_cagr_5yr&amp;quot;: 23.88,\n    &amp;quot;eps_cagr_5yr&amp;quot;: 24.57,\n    &amp;quot;fcf_cagr_5yr&amp;quot;: null\n  }\n}\n\n============================================================\nTesting: http://127.0.0.1:8000/api/v1/financials/ATGL/valuation\nStatus: 200\nPASS\nResponse:\n{\n  &amp;quot;status&amp;quot;: &amp;quot;success&amp;quot;,\n  &amp;quot;company_id&amp;quot;: &amp;quot;ATGL&amp;quot;,\n  &amp;quot;year&amp;quot;: 2024,\n  &amp;quot;valuation&amp;quot;: {\n    &amp;quot;market_cap_crore&amp;quot;: 1535602.41,\n    &amp;quot;enterprise_value_crore&amp;quot;: 1925338.89,\n    &amp;quot;pe_ratio&amp;quot;: 56.96,\n    &amp;quot;pb_ratio&amp;quot;: 5.76,\n    &amp;quot;ev_ebitda&amp;quot;: 28.93,\n    &amp;quot;dividend_yield_pct&amp;quot;: 0.51\n  }\n}\n\n============================================================\nTesting: http://127.0.0.1:8000/api/v1/screener?limit=10\nStatus: 200\nPASS\nResponse:\n{\n  &amp;quot;status&amp;quot;: &amp;quot;success&amp;quot;,\n  &amp;quot;count&amp;quot;: 10,\n  &amp;quot;filters&amp;quot;: {\n    &amp;quot;sector&amp;quot;: null,\n    &amp;quot;min_roe&amp;quot;: null,\n    &amp;quot;min_roce&amp;quot;: null,\n    &amp;quot;max_debt_equity&amp;quot;: null,\n    &amp;quot;market_cap_category&amp;quot;: null,\n    &amp;quot;limit&amp;quot;: 10\n  },\n  &amp;quot;data&amp;quot;: [\n    {\n      &amp;quot;id&amp;quot;: &amp;quot;NESTLEIND&amp;quot;,\n      &amp;quot;company_name&amp;quot;: &amp;quot;Nestle India Ltd&amp;quot;,\n      &amp;quot;broad_sector&amp;quot;: &amp;quot;Consumer Staples&amp;quot;,\n      &amp;quot;sub_sector&amp;quot;: &amp;quot;Food Products&amp;quot;,\n      &amp;quot;market_cap_category&amp;quot;: &amp;quot;Large Cap&amp;quot;,\n      &amp;quot;index_weight_pct&amp;quot;: 0.94,\n      &amp;quot;roe_pct&amp;quot;: 135.61,\n      &amp;quot;roce_pct&amp;quot;: 185.43,\n      &amp;quot;ratio_year&amp;quot;: &amp;quot;2024&amp;quot;,\n      &amp;quot;debt_to_equity&amp;quot;: 0.1,\n      &amp;quot;net_profit_margin_pct&amp;quot;: 16.12,\n      &amp;quot;operating_profit_margin_pct&amp;quot;: 23.83,\n      &amp;quot;return_on_equity_pct&amp;quot;: 117.75,\n      &amp;quot;interest_coverage&amp;quot;: 41.19,\n      &amp;quot;asset_turnover&amp;quot;: 2.32\n    },\n    {\n      &amp;quot;id&amp;quot;: &amp;quot;LICI&amp;quot;,\n      &amp;quot;company_name&amp;quot;: &amp;quot;Life Insurance Corporation of India&amp;quot;,\n      &amp;quot;broad_sector&amp;quot;: &amp;quot;Financials&amp;quot;,\n      &amp;quot;sub_sector&amp;quot;: &amp;quot;Life Insurance&amp;quot;,\n      &amp;quot;market_cap_category&amp;quot;: &amp;quot;Large Cap&amp;quot;,\n      &amp;quot;index_weight_pct&amp;quot;: 2.18,\n      &amp;quot;roe_pct&amp;quot;: 63.61,\n    \n\n============================================================\nTesting: http://127.0.0.1:8000/api/v1/screener?min_roe=20&amp;amp;limit=20\nStatus: 200\nPASS\nResponse:\n{\n  &amp;quot;status&amp;quot;: &amp;quot;success&amp;quot;,\n  &amp;quot;count&amp;quot;: 20,\n  &amp;quot;filters&amp;quot;: {\n    &amp;quot;sector&amp;quot;: null,\n    &amp;quot;min_roe&amp;quot;: 20.0,\n    &amp;quot;min_roce&amp;quot;: null,\n    &amp;quot;max_debt_equity&amp;quot;: null,\n    &amp;quot;market_cap_category&amp;quot;: null,\n    &amp;quot;limit&amp;quot;: 20\n  },\n  &amp;quot;data&amp;quot;: [\n    {\n      &amp;quot;id&amp;quot;: &amp;quot;NESTLEIND&amp;quot;,\n      &amp;quot;company_name&amp;quot;: &amp;quot;Nestle India Ltd&amp;quot;,\n      &amp;quot;broad_sector&amp;quot;: &amp;quot;Consumer Staples&amp;quot;,\n      &amp;quot;sub_sector&amp;quot;: &amp;quot;Food Products&amp;quot;,\n      &amp;quot;market_cap_category&amp;quot;: &amp;quot;Large Cap&amp;quot;,\n      &amp;quot;index_weight_pct&amp;quot;: 0.94,\n      &amp;quot;roe_pct&amp;quot;: 135.61,\n      &amp;quot;roce_pct&amp;quot;: 185.43,\n      &amp;quot;ratio_year&amp;quot;: &amp;quot;2024&amp;quot;,\n      &amp;quot;debt_to_equity&amp;quot;: 0.1,\n      &amp;quot;net_profit_margin_pct&amp;quot;: 16.12,\n      &amp;quot;operating_profit_margin_pct&amp;quot;: 23.83,\n      &amp;quot;return_on_equity_pct&amp;quot;: 117.75,\n      &amp;quot;interest_coverage&amp;quot;: 41.19,\n      &amp;quot;asset_turnover&amp;quot;: 2.32\n    },\n    {\n      &amp;quot;id&amp;quot;: &amp;quot;LICI&amp;quot;,\n      &amp;quot;company_name&amp;quot;: &amp;quot;Life Insurance Corporation of India&amp;quot;,\n      &amp;quot;broad_sector&amp;quot;: &amp;quot;Financials&amp;quot;,\n      &amp;quot;sub_sector&amp;quot;: &amp;quot;Life Insurance&amp;quot;,\n      &amp;quot;market_cap_category&amp;quot;: &amp;quot;Large Cap&amp;quot;,\n      &amp;quot;index_weight_pct&amp;quot;: 2.18,\n      &amp;quot;roe_pct&amp;quot;: 63.61,\n    \n\n============================================================\nTesting: http://127.0.0.1:8000/api/v1/screener?max_debt_equity=1&amp;amp;limit=20\nStatus: 200\nPASS\nResponse:\n{\n  &amp;quot;status&amp;quot;: &amp;quot;success&amp;quot;,\n  &amp;quot;count&amp;quot;: 20,\n  &amp;quot;filters&amp;quot;: {\n    &amp;quot;sector&amp;quot;: null,\n    &amp;quot;min_roe&amp;quot;: null,\n    &amp;quot;min_roce&amp;quot;: null,\n    &amp;quot;max_debt_equity&amp;quot;: 1.0,\n    &amp;quot;market_cap_category&amp;quot;: null,\n    &amp;quot;limit&amp;quot;: 20\n  },\n  &amp;quot;data&amp;quot;: [\n    {\n      &amp;quot;id&amp;quot;: &amp;quot;NESTLEIND&amp;quot;,\n      &amp;quot;company_name&amp;quot;: &amp;quot;Nestle India Ltd&amp;quot;,\n      &amp;quot;broad_sector&amp;quot;: &amp;quot;Consumer Staples&amp;quot;,\n      &amp;quot;sub_sector&amp;quot;: &amp;quot;Food Products&amp;quot;,\n      &amp;quot;market_cap_category&amp;quot;: &amp;quot;Large Cap&amp;quot;,\n      &amp;quot;index_weight_pct&amp;quot;: 0.94,\n      &amp;quot;roe_pct&amp;quot;: 135.61,\n      &amp;quot;roce_pct&amp;quot;: 185.43,\n      &amp;quot;ratio_year&amp;quot;: &amp;quot;2024&amp;quot;,\n      &amp;quot;debt_to_equity&amp;quot;: 0.1,\n      &amp;quot;net_profit_margin_pct&amp;quot;: 16.12,\n      &amp;quot;operating_profit_margin_pct&amp;quot;: 23.83,\n      &amp;quot;return_on_equity_pct&amp;quot;: 117.75,\n      &amp;quot;interest_coverage&amp;quot;: 41.19,\n      &amp;quot;asset_turnover&amp;quot;: 2.32\n    },\n    {\n      &amp;quot;id&amp;quot;: &amp;quot;LICI&amp;quot;,\n      &amp;quot;company_name&amp;quot;: &amp;quot;Life Insurance Corporation of India&amp;quot;,\n      &amp;quot;broad_sector&amp;quot;: &amp;quot;Financials&amp;quot;,\n      &amp;quot;sub_sector&amp;quot;: &amp;quot;Life Insurance&amp;quot;,\n      &amp;quot;market_cap_category&amp;quot;: &amp;quot;Large Cap&amp;quot;,\n      &amp;quot;index_weight_pct&amp;quot;: 2.18,\n      &amp;quot;roe_pct&amp;quot;: 63.61,\n     \n\n============================================================\nAPI TEST COMPLETED\n============================================================\n\nAll API endpoints passed.\n&#34;}], &#34;tests/screener/test_presets.py::TestPresets::test_quality_compounder&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/screener/test_presets.py::TestPresets::test_quality_compounder&#34;, &#34;duration&#34;: &#34;1 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/screener/test_presets.py::TestPresets::test_quality_compounder&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;1 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}]}, &#34;renderCollapsed&#34;: [&#34;passed&#34;], &#34;initialSort&#34;: &#34;result&#34;, &#34;title&#34;: &#34;pytest_report.html&#34;}"></div>
+    <script>
+      (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+const { getCollapsedCategory, setCollapsedIds } = require('./storage.js')
+
+class DataManager {
+    setManager(data) {
+        const collapsedCategories = [...getCollapsedCategory(data.renderCollapsed)]
+        const collapsedIds = []
+        const tests = Object.values(data.tests).flat().map((test, index) => {
+            const collapsed = collapsedCategories.includes(test.result.toLowerCase())
+            const id = `test_${index}`
+            if (collapsed) {
+                collapsedIds.push(id)
+            }
+            return {
+                ...test,
+                id,
+                collapsed,
+            }
+        })
+        const dataBlob = { ...data, tests }
+        this.data = { ...dataBlob }
+        this.renderData = { ...dataBlob }
+        setCollapsedIds(collapsedIds)
+    }
+
+    get allData() {
+        return { ...this.data }
+    }
+
+    resetRender() {
+        this.renderData = { ...this.data }
+    }
+
+    setRender(data) {
+        this.renderData.tests = [...data]
+    }
+
+    toggleCollapsedItem(id) {
+        this.renderData.tests = this.renderData.tests.map((test) =>
+            test.id === id ? { ...test, collapsed: !test.collapsed } : test,
+        )
+    }
+
+    set allCollapsed(collapsed) {
+        this.renderData = { ...this.renderData, tests: [...this.renderData.tests.map((test) => (
+            { ...test, collapsed }
+        ))] }
+    }
+
+    get testSubset() {
+        return [...this.renderData.tests]
+    }
+
+    get environment() {
+        return this.renderData.environment
+    }
+
+    get initialSort() {
+        return this.data.initialSort
+    }
+}
+
+module.exports = {
+    manager: new DataManager(),
+}
+
+},{"./storage.js":8}],2:[function(require,module,exports){
+const mediaViewer = require('./mediaviewer.js')
+const templateEnvRow = document.getElementById('template_environment_row')
+const templateResult = document.getElementById('template_results-table__tbody')
+
+function htmlToElements(html) {
+    const temp = document.createElement('template')
+    temp.innerHTML = html
+    return temp.content.childNodes
+}
+
+const find = (selector, elem) => {
+    if (!elem) {
+        elem = document
+    }
+    return elem.querySelector(selector)
+}
+
+const findAll = (selector, elem) => {
+    if (!elem) {
+        elem = document
+    }
+    return [...elem.querySelectorAll(selector)]
+}
+
+const dom = {
+    getStaticRow: (key, value) => {
+        const envRow = templateEnvRow.content.cloneNode(true)
+        const isObj = typeof value === 'object' && value !== null
+        const values = isObj ? Object.keys(value).map((k) => `${k}: ${value[k]}`) : null
+
+        const valuesElement = htmlToElements(
+            values ? `<ul>${values.map((val) => `<li>${val}</li>`).join('')}<ul>` : `<div>${value}</div>`)[0]
+        const td = findAll('td', envRow)
+        td[0].textContent = key
+        td[1].appendChild(valuesElement)
+
+        return envRow
+    },
+    getResultTBody: ({ testId, id, log, extras, resultsTableRow, tableHtml, result, collapsed }) => {
+        const resultBody = templateResult.content.cloneNode(true)
+        resultBody.querySelector('tbody').classList.add(result.toLowerCase())
+        resultBody.querySelector('tbody').id = testId
+        resultBody.querySelector('.collapsible').dataset.id = id
+
+        resultsTableRow.forEach((html) => {
+            const t = document.createElement('template')
+            t.innerHTML = html
+            resultBody.querySelector('.collapsible').appendChild(t.content)
+        })
+
+        if (log) {
+            // Wrap lines starting with "E" with span.error to color those lines red
+            const wrappedLog = log.replace(/^E.*$/gm, (match) => `<span class="error">${match}</span>`)
+            resultBody.querySelector('.log').innerHTML = wrappedLog
+        } else {
+            resultBody.querySelector('.log').remove()
+        }
+
+        if (collapsed) {
+            resultBody.querySelector('.collapsible > .col-result')?.classList.add('collapsed')
+            resultBody.querySelector('.extras-row').classList.add('hidden')
+        } else {
+            resultBody.querySelector('.collapsible > .col-result')?.classList.remove('collapsed')
+        }
+
+        const media = []
+        extras?.forEach(({ name, format_type, content }) => {
+            if (['image', 'video'].includes(format_type)) {
+                media.push({ path: content, name, format_type })
+            }
+
+            if (format_type === 'html') {
+                resultBody.querySelector('.extraHTML').insertAdjacentHTML('beforeend', `<div>${content}</div>`)
+            }
+        })
+        mediaViewer.setup(resultBody, media)
+
+        // Add custom html from the pytest_html_results_table_html hook
+        tableHtml?.forEach((item) => {
+            resultBody.querySelector('td[class="extra"]').insertAdjacentHTML('beforeend', item)
+        })
+
+        return resultBody
+    },
+}
+
+module.exports = {
+    dom,
+    htmlToElements,
+    find,
+    findAll,
+}
+
+},{"./mediaviewer.js":6}],3:[function(require,module,exports){
+const { manager } = require('./datamanager.js')
+const { doSort } = require('./sort.js')
+const storageModule = require('./storage.js')
+
+const getFilteredSubSet = (filter) =>
+    manager.allData.tests.filter(({ result }) => filter.includes(result.toLowerCase()))
+
+const doInitFilter = () => {
+    const currentFilter = storageModule.getVisible()
+    const filteredSubset = getFilteredSubSet(currentFilter)
+    manager.setRender(filteredSubset)
+}
+
+const doFilter = (type, show) => {
+    if (show) {
+        storageModule.showCategory(type)
+    } else {
+        storageModule.hideCategory(type)
+    }
+
+    const currentFilter = storageModule.getVisible()
+    const filteredSubset = getFilteredSubSet(currentFilter)
+    manager.setRender(filteredSubset)
+
+    const sortColumn = storageModule.getSort()
+    doSort(sortColumn, true)
+}
+
+module.exports = {
+    doFilter,
+    doInitFilter,
+}
+
+},{"./datamanager.js":1,"./sort.js":7,"./storage.js":8}],4:[function(require,module,exports){
+const { redraw, bindEvents, renderStatic } = require('./main.js')
+const { doInitFilter } = require('./filter.js')
+const { doInitSort } = require('./sort.js')
+const { manager } = require('./datamanager.js')
+const data = JSON.parse(document.getElementById('data-container').dataset.jsonblob)
+
+function init() {
+    manager.setManager(data)
+    doInitFilter()
+    doInitSort()
+    renderStatic()
+    redraw()
+    bindEvents()
+}
+
+init()
+
+},{"./datamanager.js":1,"./filter.js":3,"./main.js":5,"./sort.js":7}],5:[function(require,module,exports){
+const { dom, find, findAll } = require('./dom.js')
+const { manager } = require('./datamanager.js')
+const { doSort } = require('./sort.js')
+const { doFilter } = require('./filter.js')
+const {
+    getVisible,
+    getCollapsedIds,
+    setCollapsedIds,
+    getSort,
+    getSortDirection,
+    possibleFilters,
+} = require('./storage.js')
+
+const removeChildren = (node) => {
+    while (node.firstChild) {
+        node.removeChild(node.firstChild)
+    }
+}
+
+const renderStatic = () => {
+    const renderEnvironmentTable = () => {
+        const environment = manager.environment
+        const rows = Object.keys(environment).map((key) => dom.getStaticRow(key, environment[key]))
+        const table = document.getElementById('environment')
+        removeChildren(table)
+        rows.forEach((row) => table.appendChild(row))
+    }
+    renderEnvironmentTable()
+}
+
+const addItemToggleListener = (elem) => {
+    elem.addEventListener('click', ({ target }) => {
+        const id = target.parentElement.dataset.id
+        manager.toggleCollapsedItem(id)
+
+        const collapsedIds = getCollapsedIds()
+        if (collapsedIds.includes(id)) {
+            const updated = collapsedIds.filter((item) => item !== id)
+            setCollapsedIds(updated)
+        } else {
+            collapsedIds.push(id)
+            setCollapsedIds(collapsedIds)
+        }
+        redraw()
+    })
+}
+
+const renderContent = (tests) => {
+    const sortAttr = getSort(manager.initialSort)
+    const sortAsc = JSON.parse(getSortDirection())
+    const rows = tests.map(dom.getResultTBody)
+    const table = document.getElementById('results-table')
+    const tableHeader = document.getElementById('results-table-head')
+
+    const newTable = document.createElement('table')
+    newTable.id = 'results-table'
+
+    // remove all sorting classes and set the relevant
+    findAll('.sortable', tableHeader).forEach((elem) => elem.classList.remove('asc', 'desc'))
+    tableHeader.querySelector(`.sortable[data-column-type="${sortAttr}"]`)?.classList.add(sortAsc ? 'desc' : 'asc')
+    newTable.appendChild(tableHeader)
+
+    if (!rows.length) {
+        const emptyTable = document.getElementById('template_results-table__body--empty').content.cloneNode(true)
+        newTable.appendChild(emptyTable)
+    } else {
+        rows.forEach((row) => {
+            if (!!row) {
+                findAll('.collapsible td:not(.col-links', row).forEach(addItemToggleListener)
+                find('.logexpander', row).addEventListener('click',
+                    (evt) => evt.target.parentNode.classList.toggle('expanded'),
+                )
+                newTable.appendChild(row)
+            }
+        })
+    }
+
+    table.replaceWith(newTable)
+}
+
+const renderDerived = () => {
+    const currentFilter = getVisible()
+    possibleFilters.forEach((result) => {
+        const input = document.querySelector(`input[data-test-result="${result}"]`)
+        input.checked = currentFilter.includes(result)
+    })
+}
+
+const bindEvents = () => {
+    const filterColumn = (evt) => {
+        const { target: element } = evt
+        const { testResult } = element.dataset
+
+        doFilter(testResult, element.checked)
+        const collapsedIds = getCollapsedIds()
+        const updated = manager.renderData.tests.map((test) => {
+            return {
+                ...test,
+                collapsed: collapsedIds.includes(test.id),
+            }
+        })
+        manager.setRender(updated)
+        redraw()
+    }
+
+    const header = document.getElementById('environment-header')
+    header.addEventListener('click', () => {
+        const table = document.getElementById('environment')
+        table.classList.toggle('hidden')
+        header.classList.toggle('collapsed')
+    })
+
+    findAll('input[name="filter_checkbox"]').forEach((elem) => {
+        elem.addEventListener('click', filterColumn)
+    })
+
+    findAll('.sortable').forEach((elem) => {
+        elem.addEventListener('click', (evt) => {
+            const { target: element } = evt
+            const { columnType } = element.dataset
+            doSort(columnType)
+            redraw()
+        })
+    })
+
+    document.getElementById('show_all_details').addEventListener('click', () => {
+        manager.allCollapsed = false
+        setCollapsedIds([])
+        redraw()
+    })
+    document.getElementById('hide_all_details').addEventListener('click', () => {
+        manager.allCollapsed = true
+        const allIds = manager.renderData.tests.map((test) => test.id)
+        setCollapsedIds(allIds)
+        redraw()
+    })
+}
+
+const redraw = () => {
+    const { testSubset } = manager
+
+    renderContent(testSubset)
+    renderDerived()
+}
+
+module.exports = {
+    redraw,
+    bindEvents,
+    renderStatic,
+}
+
+},{"./datamanager.js":1,"./dom.js":2,"./filter.js":3,"./sort.js":7,"./storage.js":8}],6:[function(require,module,exports){
+class MediaViewer {
+    constructor(assets) {
+        this.assets = assets
+        this.index = 0
+    }
+
+    nextActive() {
+        this.index = this.index === this.assets.length - 1 ? 0 : this.index + 1
+        return [this.activeFile, this.index]
+    }
+
+    prevActive() {
+        this.index = this.index === 0 ? this.assets.length - 1 : this.index -1
+        return [this.activeFile, this.index]
+    }
+
+    get currentIndex() {
+        return this.index
+    }
+
+    get activeFile() {
+        return this.assets[this.index]
+    }
+}
+
+
+const setup = (resultBody, assets) => {
+    if (!assets.length) {
+        resultBody.querySelector('.media').classList.add('hidden')
+        return
+    }
+
+    const mediaViewer = new MediaViewer(assets)
+    const container = resultBody.querySelector('.media-container')
+    const leftArrow = resultBody.querySelector('.media-container__nav--left')
+    const rightArrow = resultBody.querySelector('.media-container__nav--right')
+    const mediaName = resultBody.querySelector('.media__name')
+    const counter = resultBody.querySelector('.media__counter')
+    const imageEl = resultBody.querySelector('img')
+    const sourceEl = resultBody.querySelector('source')
+    const videoEl = resultBody.querySelector('video')
+
+    const setImg = (media, index) => {
+        if (media?.format_type === 'image') {
+            imageEl.src = media.path
+
+            imageEl.classList.remove('hidden')
+            videoEl.classList.add('hidden')
+        } else if (media?.format_type === 'video') {
+            sourceEl.src = media.path
+
+            videoEl.classList.remove('hidden')
+            imageEl.classList.add('hidden')
+        }
+
+        mediaName.innerText = media?.name
+        counter.innerText = `${index + 1} / ${assets.length}`
+    }
+    setImg(mediaViewer.activeFile, mediaViewer.currentIndex)
+
+    const moveLeft = () => {
+        const [media, index] = mediaViewer.prevActive()
+        setImg(media, index)
+    }
+    const doRight = () => {
+        const [media, index] = mediaViewer.nextActive()
+        setImg(media, index)
+    }
+    const openImg = () => {
+        window.open(mediaViewer.activeFile.path, '_blank')
+    }
+    if (assets.length === 1) {
+        container.classList.add('media-container--fullscreen')
+    } else {
+        leftArrow.addEventListener('click', moveLeft)
+        rightArrow.addEventListener('click', doRight)
+    }
+    imageEl.addEventListener('click', openImg)
+}
+
+module.exports = {
+    setup,
+}
+
+},{}],7:[function(require,module,exports){
+const { manager } = require('./datamanager.js')
+const storageModule = require('./storage.js')
+
+const genericSort = (list, key, ascending, customOrder) => {
+    let sorted
+    if (customOrder) {
+        sorted = list.sort((a, b) => {
+            const aValue = a.result.toLowerCase()
+            const bValue = b.result.toLowerCase()
+
+            const aIndex = customOrder.findIndex((item) => item.toLowerCase() === aValue)
+            const bIndex = customOrder.findIndex((item) => item.toLowerCase() === bValue)
+
+            // Compare the indices to determine the sort order
+            return aIndex - bIndex
+        })
+    } else {
+        sorted = list.sort((a, b) => a[key] === b[key] ? 0 : a[key] > b[key] ? 1 : -1)
+    }
+
+    if (ascending) {
+        sorted.reverse()
+    }
+    return sorted
+}
+
+const durationSort = (list, ascending) => {
+    const parseDuration = (duration) => {
+        if (duration.includes(':')) {
+            // If it's in the format "HH:mm:ss"
+            const [hours, minutes, seconds] = duration.split(':').map(Number)
+            return (hours * 3600 + minutes * 60 + seconds) * 1000
+        } else {
+            // If it's in the format "nnn ms"
+            return parseInt(duration)
+        }
+    }
+    const sorted = list.sort((a, b) => parseDuration(a['duration']) - parseDuration(b['duration']))
+    if (ascending) {
+        sorted.reverse()
+    }
+    return sorted
+}
+
+const doInitSort = () => {
+    const type = storageModule.getSort(manager.initialSort)
+    const ascending = storageModule.getSortDirection()
+    const list = manager.testSubset
+    const initialOrder = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed', 'Skipped', 'Passed']
+
+    storageModule.setSort(type)
+    storageModule.setSortDirection(ascending)
+
+    if (type?.toLowerCase() === 'original') {
+        manager.setRender(list)
+    } else {
+        let sortedList
+        switch (type) {
+        case 'duration':
+            sortedList = durationSort(list, ascending)
+            break
+        case 'result':
+            sortedList = genericSort(list, type, ascending, initialOrder)
+            break
+        default:
+            sortedList = genericSort(list, type, ascending)
+            break
+        }
+        manager.setRender(sortedList)
+    }
+}
+
+const doSort = (type, skipDirection) => {
+    const newSortType = storageModule.getSort(manager.initialSort) !== type
+    const currentAsc = storageModule.getSortDirection()
+    let ascending
+    if (skipDirection) {
+        ascending = currentAsc
+    } else {
+        ascending = newSortType ? false : !currentAsc
+    }
+    storageModule.setSort(type)
+    storageModule.setSortDirection(ascending)
+
+    const list = manager.testSubset
+    const sortedList = type === 'duration' ? durationSort(list, ascending) : genericSort(list, type, ascending)
+    manager.setRender(sortedList)
+}
+
+module.exports = {
+    doInitSort,
+    doSort,
+}
+
+},{"./datamanager.js":1,"./storage.js":8}],8:[function(require,module,exports){
+const possibleFilters = [
+    'passed',
+    'skipped',
+    'failed',
+    'error',
+    'xfailed',
+    'xpassed',
+    'rerun',
+]
+
+const getVisible = () => {
+    const url = new URL(window.location.href)
+    const settings = new URLSearchParams(url.search).get('visible')
+    const lower = (item) => {
+        const lowerItem = item.toLowerCase()
+        if (possibleFilters.includes(lowerItem)) {
+            return lowerItem
+        }
+        return null
+    }
+    return settings === null ?
+        possibleFilters :
+        [...new Set(settings?.split(',').map(lower).filter((item) => item))]
+}
+
+const hideCategory = (categoryToHide) => {
+    const url = new URL(window.location.href)
+    const visibleParams = new URLSearchParams(url.search).get('visible')
+    const currentVisible = visibleParams ? visibleParams.split(',') : [...possibleFilters]
+    const settings = [...new Set(currentVisible)].filter((f) => f !== categoryToHide).join(',')
+
+    url.searchParams.set('visible', settings)
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const showCategory = (categoryToShow) => {
+    if (typeof window === 'undefined') {
+        return
+    }
+    const url = new URL(window.location.href)
+    const currentVisible = new URLSearchParams(url.search).get('visible')?.split(',').filter(Boolean) ||
+        [...possibleFilters]
+    const settings = [...new Set([categoryToShow, ...currentVisible])]
+    const noFilter = possibleFilters.length === settings.length || !settings.length
+
+    noFilter ? url.searchParams.delete('visible') : url.searchParams.set('visible', settings.join(','))
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const getSort = (initialSort) => {
+    const url = new URL(window.location.href)
+    let sort = new URLSearchParams(url.search).get('sort')
+    if (!sort) {
+        sort = initialSort || 'result'
+    }
+    return sort
+}
+
+const setSort = (type) => {
+    const url = new URL(window.location.href)
+    url.searchParams.set('sort', type)
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const getCollapsedCategory = (renderCollapsed) => {
+    let categories
+    if (typeof window !== 'undefined') {
+        const url = new URL(window.location.href)
+        const collapsedItems = new URLSearchParams(url.search).get('collapsed')
+        switch (true) {
+        case !renderCollapsed && collapsedItems === null:
+            categories = ['passed']
+            break
+        case collapsedItems?.length === 0 || /^["']{2}$/.test(collapsedItems):
+            categories = []
+            break
+        case /^all$/.test(collapsedItems) || collapsedItems === null && /^all$/.test(renderCollapsed):
+            categories = [...possibleFilters]
+            break
+        default:
+            categories = collapsedItems?.split(',').map((item) => item.toLowerCase()) || renderCollapsed
+            break
+        }
+    } else {
+        categories = []
+    }
+    return categories
+}
+
+const getSortDirection = () => JSON.parse(sessionStorage.getItem('sortAsc')) || false
+const setSortDirection = (ascending) => sessionStorage.setItem('sortAsc', ascending)
+
+const getCollapsedIds = () => JSON.parse(sessionStorage.getItem('collapsedIds')) || []
+const setCollapsedIds = (list) => sessionStorage.setItem('collapsedIds', JSON.stringify(list))
+
+module.exports = {
+    getVisible,
+    hideCategory,
+    showCategory,
+    getCollapsedIds,
+    setCollapsedIds,
+    getSort,
+    setSort,
+    getSortDirection,
+    setSortDirection,
+    getCollapsedCategory,
+    possibleFilters,
+}
+
+},{}]},{},[4]);
+    </script>
+  </footer>
+  </body>
+</html>

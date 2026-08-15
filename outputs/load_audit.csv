@@ -1,13 +1,13 @@
 Table,Rows Loaded,Status
-companies,92,Success
-profit_loss,1177,Success
-balance_sheet,1227,Success
-cash_flow,1091,Success
-analysis,16,Success
-pros_and_cons,14,Success
-documents,1457,Success
-stock_prices,5520,Success
-ratios,1160,Success
-market_cap,552,Success
-peer_groups,56,Success
-sectors,92,Success
+companies,0,UNIQUE constraint failed: companies.id
+profit_loss,0,UNIQUE constraint failed: profit_loss.id
+balance_sheet,0,UNIQUE constraint failed: balance_sheet.id
+cash_flow,0,UNIQUE constraint failed: cash_flow.id
+analysis,0,UNIQUE constraint failed: analysis.id
+pros_and_cons,0,UNIQUE constraint failed: pros_and_cons.id
+documents,0,UNIQUE constraint failed: documents.id
+stock_prices,0,UNIQUE constraint failed: stock_prices.id
+ratios,0,UNIQUE constraint failed: ratios.id
+market_cap,0,UNIQUE constraint failed: market_cap.id
+peer_groups,0,UNIQUE constraint failed: peer_groups.id
+sectors,0,UNIQUE constraint failed: sectors.id

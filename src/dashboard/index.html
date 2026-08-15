@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Nifty100 Financial Intelligence</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="top-header">
+
+        <div>
+
+            <h1>
+                Nifty100 Financial Intelligence
+            </h1>
+
+            <p>
+                AI-powered financial intelligence and stock analysis platform
+            </p>
+
+        </div>
+
+        <div
+            id="apiStatus"
+            class="api-status"
+        >
+            ● Checking API...
+        </div>
+
+    </header>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="container">
+
+
+        <!-- ================= COMPANY SEARCH ================= -->
+
+        <section class="search-section">
+
+            <h2>
+                Company Financial Analysis
+            </h2>
+
+            <div class="search-box">
+
+                <input
+                    type="text"
+                    id="companyInput"
+                    placeholder="Enter company ID e.g. TCS"
+                    value="TCS"
+                >
+
+                <button
+                    id="analyzeBtn"
+                    type="button"
+                >
+                    Analyze
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= COMPANY SECTION ================= -->
+
+        <section
+            id="companySection"
+            class="hidden"
+        >
+
+            <!-- COMPANY TITLE -->
+
+            <div class="company-heading">
+
+                <h2 id="companyName">
+                    TCS
+                </h2>
+
+                <p id="companyYear">
+                    Financial Year: -
+                </p>
+
+            </div>
+
+
+            <!-- ================= KPI CARDS ================= -->
+
+            <div class="kpi-grid">
+
+                <div class="kpi-card">
+
+                    <span>
+                        Net Profit Margin
+                    </span>
+
+                    <strong id="npm">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div class="kpi-card">
+
+                    <span>
+                        Operating Margin
+                    </span>
+
+                    <strong id="opm">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div class="kpi-card">
+
+                    <span>
+                        ROE
+                    </span>
+
+                    <strong id="roe">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div class="kpi-card">
+
+                    <span>
+                        Debt / Equity
+                    </span>
+
+                    <strong id="de">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div class="kpi-card">
+
+                    <span>
+                        Interest Coverage
+                    </span>
+
+                    <strong id="interestCoverage">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div class="kpi-card">
+
+                    <span>
+                        Asset Turnover
+                    </span>
+
+                    <strong id="assetTurnover">
+                        -
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= FINANCIAL PERFORMANCE ================= -->
+
+            <div class="two-column-grid">
+
+
+                <div class="panel">
+
+                    <h3>
+                        Financial Performance
+                    </h3>
+
+                    <div class="metric-row">
+                        <span>Sales</span>
+                        <strong id="sales">-</strong>
+                    </div>
+
+                    <div class="metric-row">
+                        <span>Operating Profit</span>
+                        <strong id="operatingProfit">-</strong>
+                    </div>
+
+                    <div class="metric-row">
+                        <span>Profit Before Tax</span>
+                        <strong id="pbt">-</strong>
+                    </div>
+
+                    <div class="metric-row">
+                        <span>Net Profit</span>
+                        <strong id="netProfit">-</strong>
+                    </div>
+
+                    <div class="metric-row">
+                        <span>EPS</span>
+                        <strong id="eps">-</strong>
+                    </div>
+
+                    <div class="metric-row">
+                        <span>Free Cash Flow</span>
+                        <strong id="fcf">-</strong>
+                    </div>
+
+                </div>
+
+
+                <!-- ================= VALUATION ================= -->
+
+                <div class="panel">
+
+                    <h3>
+                        Valuation
+                    </h3>
+
+                    <div class="metric-row">
+                        <span>Market Cap</span>
+                        <strong id="marketCap">-</strong>
+                    </div>
+
+                    <div class="metric-row">
+                        <span>Enterprise Value</span>
+                        <strong id="enterpriseValue">-</strong>
+                    </div>
+
+                    <div class="metric-row">
+                        <span>P/E Ratio</span>
+                        <strong id="pe">-</strong>
+                    </div>
+
+                    <div class="metric-row">
+                        <span>P/B Ratio</span>
+                        <strong id="pb">-</strong>
+                    </div>
+
+                    <div class="metric-row">
+                        <span>EV / EBITDA</span>
+                        <strong id="evEbitda">-</strong>
+                    </div>
+
+                    <div class="metric-row">
+                        <span>Dividend Yield</span>
+                        <strong id="dividendYield">-</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= CAGR ================= -->
+
+            <div class="panel">
+
+                <h3>
+                    5-Year CAGR
+                </h3>
+
+                <div class="cagr-grid">
+
+
+                    <div class="cagr-card">
+
+                        <span>
+                            Revenue CAGR
+                        </span>
+
+                        <strong id="revenueCagr">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="cagr-card">
+
+                        <span>
+                            PAT CAGR
+                        </span>
+
+                        <strong id="patCagr">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="cagr-card">
+
+                        <span>
+                            EPS CAGR
+                        </span>
+
+                        <strong id="epsCagr">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="cagr-card">
+
+                        <span>
+                            FCF CAGR
+                        </span>
+
+                        <strong id="fcfCagr">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= FINANCIAL HISTORY ================= -->
+
+            <section
+                id="historySection"
+                class="panel hidden"
+            >
+
+                <div class="section-header">
+
+                    <div>
+
+                        <h3>
+                            Financial History
+                        </h3>
+
+                        <p>
+                            Historical financial performance
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="chart-grid">
+
+
+                    <!-- REVENUE -->
+
+                    <div class="chart-card">
+
+                        <h4>
+                            Revenue Trend
+                        </h4>
+
+                        <div class="chart-container">
+
+                            <canvas
+                                id="revenueChart"
+                            ></canvas>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- NET PROFIT -->
+
+                    <div class="chart-card">
+
+                        <h4>
+                            Net Profit Trend
+                        </h4>
+
+                        <div class="chart-container">
+
+                            <canvas
+                                id="profitChart"
+                            ></canvas>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ROE -->
+
+                    <div class="chart-card">
+
+                        <h4>
+                            ROE Trend
+                        </h4>
+
+                        <div class="chart-container">
+
+                            <canvas
+                                id="roeChart"
+                            ></canvas>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- MARGIN -->
+
+                    <div class="chart-card">
+
+                        <h4>
+                            Net Profit Margin Trend
+                        </h4>
+
+                        <div class="chart-container">
+
+                            <canvas
+                                id="marginChart"
+                            ></canvas>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+        </section>
+
+
+        <!-- ================= SCREENER ================= -->
+
+        <section class="panel screener-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h3>
+                        Nifty100 Screener
+                    </h3>
+
+                    <p>
+                        Top companies based on financial metrics
+                    </p>
+
+                </div>
+
+                <button
+                    id="refreshScreener"
+                    type="button"
+                    class="secondary-button"
+                >
+                    Refresh
+                </button>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Company
+                            </th>
+
+                            <th>
+                                Sector
+                            </th>
+
+                            <th>
+                                ROE
+                            </th>
+
+                            <th>
+                                ROCE
+                            </th>
+
+                            <th>
+                                Debt / Equity
+                            </th>
+
+                            <th>
+                                NPM
+                            </th>
+
+                            <th>
+                                OPM
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="screenerBody">
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="loading-cell"
+                            >
+                                Loading screener...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- ================= CHART.JS ================= -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js"
+    ></script>
+
+
+    <!-- ================= APPLICATION JS ================= -->
+
+    <script
+        src="app.js"
+    ></script>
+
+</body>
+
+</html>

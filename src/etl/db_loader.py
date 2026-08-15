@@ -71,7 +71,7 @@ def load_all_tables():
             df = df.dropna(axis=1, how="all")
 
             # Clean text values
-            for col in df.select_dtypes(include="object").columns:
+            for col in df.select_dtypes(include=["object", "string"]).columns:
                 df[col] = df[col].astype(str).str.strip()
 
             # Remove duplicate rows
