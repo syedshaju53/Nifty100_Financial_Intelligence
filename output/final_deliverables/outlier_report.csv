@@ -1,0 +1,5 @@
+company_id,broad_sector,metric,value,sector_mean,sector_std,z_score,severity
+INDIGO,Consumer Discretionary,return_on_equity_pct,892.57,86.724,232.105,3.472,HIGH
+ADANIGREEN,Energy,debt_to_equity,6.6,1.459,1.636,3.142,HIGH
+PNB,Financials,return_on_equity_pct,61.32,19.007,13.022,3.249,HIGH
+JIOFIN,Financials,revenue_cagr_5yr,4022.222,190.28,835.351,4.587,EXTREME

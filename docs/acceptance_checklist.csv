@@ -1,0 +1,21 @@
+gate,description,status,detail
+AC-01,Companies count = 92,PASS,Found 92
+AC-02,"At least 90% of companies have >=10 years P&L, BS and CF",PASS,84/92 = 91.30%
+AC-03,Foreign key check returns 0 rows,PASS,0 FK violations
+AC-04,"Financial ratios >= 1,100",FAIL,financial_ratios: 1097
+AC-05,Revenue CAGR validation output exists,PASS,/Users/syedshaju/Desktop/Nifty100_Financial_Intelligence/output/cagr_validation.csv
+AC-06,ROE cross-check validation evidence exists,PASS,ROE unit tests and profitability tests passed
+AC-07,Quality screener returns 10–50 companies,PASS,20 rows
+AC-08,Company profile performance evidence,PASS,API/performance test suite passed
+AC-09,Screener output exists and is readable,PASS,/Users/syedshaju/Desktop/Nifty100_Financial_Intelligence/output/screener_output.xlsx
+AC-10,Tearsheets available for text-overflow review,PASS,92 PDFs found
+AC-11,Health API test passes,PASS,tests/api/test_api.py passed
+AC-12,TCS ratios endpoint/data has 10+ years,PASS,12 ratio years
+AC-13,API screener integration tests pass,PASS,API and screener pytest suites passed
+AC-14,Peer percentiles contain all 11 peer groups,PASS,11 peer groups detected
+AC-15,All 92 companies have cluster assignments,PASS,92 unique companies
+AC-16,All companies have at least one pro and one con,PASS,92/92 companies
+AC-17,92 tearsheets exist and each is >=30 KB,PASS,"92 PDFs, 0 below 30 KB"
+AC-18,Pytest suite has 60+ tests and 0 failures,PASS,105 passed
+AC-19,validation_failures.csv has required columns,PASS,"Required: ['company_id', 'field', 'issue', 'severity']"
+AC-20,Analyst guide is at least 10 pages,PASS,19 pages

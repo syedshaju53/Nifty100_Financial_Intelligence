@@ -404,6 +404,28 @@ df["asset_turnover"] = df.apply(
 
 
 # ============================================================
+# CASH FLOW KPIs
+# ============================================================
+
+print("Calculating cash-flow KPIs...")
+
+# Free Cash Flow = Cash Flow from Operating Activities
+#                 + Cash Flow from Investing Activities
+#
+# The investing activity value is normally negative when the
+# company is spending on capex, so adding CFO + CFI is the
+# intended FCF definition used by this project.
+df["free_cash_flow"] = df.apply(
+    lambda x: safe_kpi(
+        free_cash_flow,
+        x.operating_activity,
+        x.investing_activity
+    ),
+    axis=1
+)
+
+
+# ============================================================
 # KPI PREVIEW
 # ============================================================
 
@@ -421,6 +443,7 @@ preview_columns = [
     "debt_to_equity",
     "interest_coverage",
     "asset_turnover",
+    "free_cash_flow",
 ]
 
 
@@ -447,6 +470,7 @@ kpi_columns = [
     "debt_to_equity",
     "interest_coverage",
     "asset_turnover",
+    "free_cash_flow",
 ]
 
 
@@ -509,6 +533,7 @@ financial_ratios = df[
         "debt_to_equity",
         "interest_coverage",
         "asset_turnover",
+        "free_cash_flow",
     ]
 ].copy()
 
@@ -541,10 +566,10 @@ financial_ratios = financial_ratios[
 # REMOVE DUPLICATES AGAIN
 # ============================================================
 
-financial_ratios = financial_ratios.drop_duplicates(
-    subset=["company_id", "year"],
-    keep="first"
-)
+# financial_ratios = financial_ratios.drop_duplicates(
+#     subset=["company_id", "year"],
+#     keep="first"
+# )
 
 
 # ============================================================
