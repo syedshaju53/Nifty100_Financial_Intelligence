@@ -87,27 +87,86 @@ gate(
     f"{len(fk_errors)} FK violations"
 )
 
+
 # ============================================================
-# AC-04 — FINANCIAL RATIOS SOURCE COVERAGE
+# AC-04 — FINANCIAL RATIOS DATABASE COVERAGE
 # ============================================================
 
 try:
+    # Count valid financial ratio records actually stored in DB
     cur.execute("""
         SELECT COUNT(*)
         FROM financial_ratios
         WHERE company_id IS NOT NULL
+          AND TRIM(company_id) <> ''
           AND year IS NOT NULL
+          AND TRIM(CAST(year AS TEXT)) <> ''
     """)
+
     db_ratio_count = cur.fetchone()[0]
 
 except sqlite3.Error:
     db_ratio_count = 0
 
+
+# ------------------------------------------------------------
+# Read source only for reporting/comparison
+# ------------------------------------------------------------
+
+try:
+    import pandas as pd
+
+    source_path = os.path.join(
+        PROJECT_ROOT,
+        "data",
+        "raw",
+        "financial_ratios.xlsx"
+    )
+
+    source_df = pd.read_excel(source_path)
+
+    source_df["company_id"] = (
+        source_df["company_id"]
+        .astype(str)
+        .str.strip()
+        .str.upper()
+    )
+
+    source_df["year"] = (
+        source_df["year"]
+        .astype(str)
+        .str.extract(r"(\d{4})")[0]
+    )
+
+    source_ratio_count = len(
+        source_df[
+            source_df["company_id"].notna()
+            & source_df["year"].notna()
+        ]
+    )
+
+except Exception:
+    source_ratio_count = 0
+
+
+# ------------------------------------------------------------
+# AC-04 ACCEPTANCE CRITERION
+# ------------------------------------------------------------
+# The DATABASE must contain at least 1,100 valid records.
+# The Excel count is informational only.
+
+ac04_pass = db_ratio_count >= 1100
+
+
 gate(
     "AC-04",
     "Financial ratios >= 1,100",
-    db_ratio_count >= 1100,
-    f"financial_ratios: {db_ratio_count}"
+    ac04_pass,
+    (
+        f"DB rows: {db_ratio_count}, "
+        f"source rows: {source_ratio_count}, "
+        f"required: 1100"
+    )
 )
 
 # --------------------------------------------------

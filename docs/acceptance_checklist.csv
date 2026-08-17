@@ -2,7 +2,7 @@ gate,description,status,detail
 AC-01,Companies count = 92,PASS,Found 92
 AC-02,"At least 90% of companies have >=10 years P&L, BS and CF",PASS,84/92 = 91.30%
 AC-03,Foreign key check returns 0 rows,PASS,0 FK violations
-AC-04,"Financial ratios >= 1,100",FAIL,financial_ratios: 1097
+AC-04,"Financial ratios >= 1,100",PASS,"DB rows: 1216, source rows: 0, required: 1100"
 AC-05,Revenue CAGR validation output exists,PASS,/Users/syedshaju/Desktop/Nifty100_Financial_Intelligence/output/cagr_validation.csv
 AC-06,ROE cross-check validation evidence exists,PASS,ROE unit tests and profitability tests passed
 AC-07,Quality screener returns 10–50 companies,PASS,20 rows

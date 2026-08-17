@@ -28,14 +28,22 @@ def price_to_book(price, book_value_per_share):
     return round(price / book_value_per_share, 2)
 
 
-def earnings_yield(eps, price):
-    """
-    Earnings Yield = EPS / Market Price × 100
-    """
-    if price is None or price <= 0:
+def earnings_yield(
+    eps,
+    price,
+):
+    
+
+    if eps is None or price is None:
         return None
 
-    return round((eps / price) * 100, 2)
+    if price == 0:
+        return None
+
+    return round(
+        (eps / price) * 100,
+        2
+    )
 
 
 def peg_ratio(pe_ratio, earnings_growth):
