@@ -818,8 +818,13 @@ Expected:
 PASS: 20
 FAIL: 0
 ```
+## 6.Run The Server 
 
-## 6. Run Test Suite
+```bash 
+make api
+```
+
+## 7. Run Test Suite
 
 ```bash
 pytest -q
