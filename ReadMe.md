@@ -822,6 +822,9 @@ FAIL: 0
 
 ```bash 
 make api
+``` 
+```text
+ After running this open new terminal tab 
 ```
 
 ## 7. Run Test Suite
